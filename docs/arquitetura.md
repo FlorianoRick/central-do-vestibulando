@@ -1,93 +1,42 @@
-# Visão geral da arquitetura do Central do Vestibulando
+# Arquitetura — Central do Vestibulando
 
-## 1. Objetivo
-A plataforma centraliza informações sobre vestibulares, editais, provas anteriores, gabaritos, calendário, materiais e organização de estudos em um ambiente web moderno, responsável e fácil de escalar.
+## Objetivo
 
-## 2. Stack principal
-- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS
-- UI: componentes reutilizáveis e páginas com roteamento App Router
-- Dados: modelo em TypeScript com fontes e status de confiabilidade
-- Previsão de backend: PostgreSQL + Supabase para autenticação, armazenamento e dados persistentes
-- Futuras integrações: e-mail, notificações push, ingestão automatizada de fontes oficiais
+Reunir processos seletivos, prazos oficiais, provas anteriores, materiais de estudo e ferramentas de organização em uma aplicação web simples para estudantes brasileiros.
 
-## 3. Estrutura de pastas
-```text
-src/
-  app/
-    calendario/
-    comparador/
-    instituicoes/
-    noticias/
-    planejamento/
-    provas/
-    vestibulares/
-    globals.css
-    layout.tsx
-    page.tsx
-  components/
-    site-shell.tsx
-  data/
-    site-data.ts
-  lib/
-    (futuro: validações, utilitários, integrações)
-public/
-  (assets estáticos)
-docs/
-  arquitetura.md
-```
+## Tecnologias
 
-## 4. Modelo de dados proposto
-- Instituição
-- Vestibular
-- Curso
-- EventDate
-- Documento
-- Prova
-- Gabarito
-- Disciplina
-- Conteúdo programático
-- Notícia
-- Usuário
-- Favorito
-- Planejamento de estudo
-- Progresso
-- Notificação
-- Fonte e histórico de atualização
+- Python e Django para lógica, formulários, autenticação, banco de dados e administração.
+- Templates Django, HTML semântico, CSS próprio e JavaScript pequeno para interação responsiva.
+- SQLite para desenvolvimento local e PostgreSQL por `DATABASE_URL` em produção.
+- Gunicorn e WhiteNoise para publicação no Render.
 
-### Campos importantes por registro
-- nome
-- instituição vinculada
-- data de publicação
-- status de confiabilidade
-- URL da fonte oficial
-- data verificada
-- último update
-- responsável pela alteração
+## Aplicativos Django
 
-## 5. Componentes principais
-- Header e navegação global
-- Dashboard inicial
-- Catálogo de vestibulares
-- Página de detalhe do vestibular
-- Calendário e lista de eventos
-- Banco de provas e gabaritos
-- Painel de comparação
-- Planejamento pessoal
-- Seção de notícias e alertas
+- `apps.core`: página inicial, páginas institucionais e carregamento dos registros demonstrativos.
+- `apps.accounts`: perfil, preferências, favoritos, materiais salvos e avisos internos.
+- `apps.admissions`: instituições, cursos, processos seletivos, calendário, documentos, provas e histórico de alterações.
+- `apps.studies`: matérias, materiais, planos, sessões, simulados e comparação de programas.
+- `apps.news`: notícias e avisos com fonte e marcação de conteúdo demonstrativo.
 
-## 6. Estratégia de dados e confiabilidade
-A plataforma separa claramente:
-- dados públicos e referenciados
-- fontes oficiais e links
-- status de confirmação e revisão
-- conteúdo demo/ilustrativo quando necessário para testes
+## Relações centrais
 
-A ideia é priorizar informações validadas em vez de exibir dados duvidosos ou estimados como oficiais.
+Uma instituição possui vários processos seletivos. Cada processo pode relacionar cursos, matérias, documentos, prazos e provas. Um plano de estudos pertence a um usuário e relaciona vestibulares, matérias e sessões. Favoritos, preferências, avisos e resultados pertencem ao usuário autenticado.
 
-## 7. Próximos passos recomendados
-1. Integrar banco real com Supabase/PostgreSQL.
-2. Implementar autenticação de usuários.
-3. Criar painel administrativo com CRUD e histórico.
-4. Conectar fontes oficiais e automatização de verificação.
-5. Adicionar notificações e alertas por email.
-6. Realizar testes E2E e deploy em produção.
+O Django Admin é a ferramenta principal de gestão. Alterações em processos seletivos registram os campos modificados, o responsável e o horário. Um processo só pode receber situação confirmada quando não for demonstrativo e tiver uma fonte oficial cadastrada.
+
+## Autenticação e privacidade
+
+O projeto usa o usuário padrão do Django e seu sistema de hash de senhas. O perfil adicional armazena nome, cidade, estado e curso desejado. Consultas de informações pessoais são filtradas pelo usuário autenticado. A área da conta permite revisar dados, preferências e excluir a conta.
+
+## Dados confiáveis
+
+O comando `python manage.py seed_demo_data` inclui os nomes dos processos e matérias para demonstração. Não cria datas, taxas, vagas, documentos, links oficiais ou notícias de instituições. A interface diferencia exemplos e informações pendentes. Só dados confirmados aparecem como oficiais e só eventos oficiais são exportados no calendário ICS.
+
+Não há coleta automática de páginas. A fila de revisão administrativa permite avaliar possíveis alterações antes de atualizar um registro.
+
+## Arquivos e publicação
+
+Arquivos carregados usam o armazenamento do Django. O armazenamento local é apropriado para desenvolvimento; antes de publicar documentos em uma instância Render efêmera, configure armazenamento persistente compatível com S3. Credenciais são fornecidas por variáveis de ambiente e não ficam no repositório.
+
+`render.yaml` define o serviço Django e PostgreSQL. `build.sh` instala dependências e coleta os arquivos estáticos. O comando de inicialização aplica migrações, carrega dados demonstrativos idempotentes e executa Gunicorn.

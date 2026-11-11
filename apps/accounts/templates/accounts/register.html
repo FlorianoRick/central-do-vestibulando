@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Criar conta — Central do Vestibulando{% endblock %}
+{% block content %}
+<section class="auth-layout page-shell register-layout">
+  <div class="auth-intro">
+    <p class="eyebrow">Comece por aqui</p>
+    <h1>Organize sua preparação para a universidade.</h1>
+    <p>Crie sua conta para guardar vestibulares, planejar seus estudos e acompanhar seu progresso.</p>
+    <a class="text-link" href="{% url 'accounts:login' %}">Já tem uma conta? Entrar <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="auth-panel surface-card">
+    <p class="eyebrow">Cadastro gratuito</p><h2>Criar sua conta</h2>
+    {% if form.non_field_errors %}<div class="form-alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+    <form method="post" novalidate>{% csrf_token %}
+      {% for field in form %}{% include "partials/field.html" with field=field %}{% endfor %}
+      <p class="form-legal">Ao criar sua conta, você concorda com os <a href="{% url 'core:terms' %}">termos de uso</a> e a <a href="{% url 'core:privacy' %}">política de privacidade</a>.</p>
+      <button class="button button-full" type="submit">Criar conta</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

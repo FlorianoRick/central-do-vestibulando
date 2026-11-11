@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }} — Central do Vestibulando{% endblock %}
+{% block content %}
+<article class="narrow-page page-shell page-section article-detail"><a class="back-link" href="{% url 'news:list' %}">← Voltar às notícias</a>
+  {% if article.is_demo %}<span class="tag tag-violet">Conteúdo demonstrativo</span>{% endif %}<p class="eyebrow">{% if article.institution %}{{ article.institution.acronym|default:article.institution.name }} · {% endif %}{% if article.published_at %}{{ article.published_at|date:"d/m/Y" }}{% else %}Sem data de publicação{% endif %}</p><h1>{{ article.title }}</h1><p class="article-summary">{{ article.summary }}</p>
+  {% if article.image %}<img class="article-image" src="{{ article.image.url }}" alt="Imagem relacionada a {{ article.title }}">{% endif %}<div class="prose-text">{{ article.content|linebreaks }}</div>
+  {% if article.source_name or article.source_url %}<div class="source-box"><strong>Fonte</strong><p>{{ article.source_name|default:"Fonte cadastrada" }}</p>{% if article.source_url %}<a class="text-link" href="{{ article.source_url }}" target="_blank" rel="noopener">Consultar fonte ↗</a>{% endif %}</div>{% endif %}
+  {% if article.article_url %}<a class="button button-outline" href="{{ article.article_url }}" target="_blank" rel="noopener">Abrir publicação original ↗</a>{% endif %}
+</article>
+{% endblock %}

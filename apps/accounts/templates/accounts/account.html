@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Minha conta — Central do Vestibulando{% endblock %}
+{% block content %}
+<section class="page-shell page-section">
+  <div class="page-heading"><div><p class="eyebrow">Área do estudante</p><h1>Olá, {{ request.user.profile.full_name|default:request.user.username }}</h1><p>Seus dados, vestibulares salvos e atividades em um só lugar.</p></div><a class="button button-outline" href="{% url 'studies:planner' %}">Meu plano de estudos</a></div>
+  <div class="account-grid">
+    <section class="surface-card account-main">
+      <div class="section-heading"><div><p class="eyebrow">Minha conta</p><h2>Meus dados</h2></div></div>
+      <form method="post" class="stacked-form">{% csrf_token %}<input type="hidden" name="section" value="profile">
+        {% if profile_form.non_field_errors %}<div class="form-alert">{{ profile_form.non_field_errors }}</div>{% endif %}
+        {% for field in profile_form %}{% include "partials/field.html" with field=field %}{% endfor %}
+        {% for field in email_form %}{% include "partials/field.html" with field=field %}{% endfor %}
+        <button class="button" type="submit">Salvar dados</button>
+      </form>
+      <div class="account-actions"><a class="text-link" href="{% url 'accounts:password_change' %}">Alterar senha <span aria-hidden="true">→</span></a></div>
+    </section>
+    <aside class="surface-card account-side">
+      <div class="section-heading"><div><p class="eyebrow">Acompanhamento</p><h2>Meus avisos</h2></div>{% if unread_count %}<span class="count-pill">{{ unread_count }} novos</span>{% endif %}</div>
+      {% for notification in notifications %}
+        <div class="notification-row{% if not notification.is_read %} notification-unread{% endif %}">
+          <div><strong>{{ notification.title }}</strong><p>{{ notification.message }}</p><small>{{ notification.created_at|date:"d/m/Y H:i" }}</small></div>
+          {% if not notification.is_read %}<form method="post" action="{% url 'accounts:mark_notification_read' notification.pk %}">{% csrf_token %}<button class="link-button" type="submit">Marcar como lido</button></form>{% endif %}
+        </div>
+      {% empty %}<p class="empty-note">Você ainda não tem avisos.</p>{% endfor %}
+    </aside>
+  </div>
+</section>
+
+<section class="page-shell account-sections">
+  <section class="surface-card">
+    <div class="section-heading"><div><p class="eyebrow">Sua seleção</p><h2>Vestibulares salvos</h2></div><a class="text-link" href="{% url 'admissions:list' %}">Explorar catálogo <span aria-hidden="true">→</span></a></div>
+    <div class="simple-card-list">{% for favorite in favorite_exams %}<article><div><strong><a href="{% url 'admissions:detail' favorite.exam.slug %}">{{ favorite.exam.name }}</a></strong><span>{{ favorite.exam.institution.acronym|default:favorite.exam.institution.name }}</span></div><span class="status status-{{ favorite.exam.verification_status }}">{{ favorite.exam.get_verification_status_display }}</span></article>{% empty %}<p class="empty-note">Os vestibulares que você salvar aparecerão aqui.</p>{% endfor %}</div>
+  </section>
+  <section class="surface-card">
+    <div class="section-heading"><div><p class="eyebrow">Biblioteca</p><h2>Materiais salvos</h2></div><a class="text-link" href="{% url 'studies:list' %}">Ver materiais <span aria-hidden="true">→</span></a></div>
+    <div class="simple-card-list">{% for saved in saved_materials %}<article><div><strong><a href="{% url 'studies:detail' saved.material.slug %}">{{ saved.material.title }}</a></strong><span>{{ saved.material.subject.name }}</span></div><span class="tag tag-violet">{{ saved.material.get_material_type_display }}</span></article>{% empty %}<p class="empty-note">Os materiais salvos aparecerão aqui.</p>{% endfor %}</div>
+  </section>
+  <section class="surface-card">
+    <div class="section-heading"><div><p class="eyebrow">Organização</p><h2>Atividade de estudo</h2></div><a class="text-link" href="{% url 'studies:planner' %}">Abrir planejamento <span aria-hidden="true">→</span></a></div>
+    <div class="simple-card-list">{% for session in sessions %}<article><div><strong>{{ session.subject.name }}{% if session.topic %} · {{ session.topic }}{% endif %}</strong><span>{{ session.scheduled_for|date:"d/m/Y" }} · {{ session.duration_minutes }} min · {{ session.get_status_display }}</span></div><span class="tag">{{ session.plan.title }}</span></article>{% empty %}<p class="empty-note">Crie um plano para organizar suas sessões.</p>{% endfor %}</div>
+  </section>
+  <section class="surface-card preferences-card">
+    <div class="section-heading"><div><p class="eyebrow">Preferências</p><h2>Como quer acompanhar</h2></div></div>
+    <form method="post" class="preferences-form">{% csrf_token %}<input type="hidden" name="section" value="preferences">
+      {% for field in preferences_form %}<div class="checkbox-row">{{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.name == 'email_notifications' %}<small>O envio por e-mail depende da configuração do serviço de e-mail.</small>{% endif %}</label></div>{% endfor %}
+      <button class="button button-outline" type="submit">Salvar preferências</button>
+    </form>
+  </section>
+  <section class="danger-zone">
+    <div><h2>Excluir conta</h2><p>Esta ação remove sua conta e os dados pessoais associados.</p></div>
+    <form method="post" action="{% url 'accounts:delete_account' %}" data-confirm="Tem certeza de que deseja excluir sua conta? Esta ação não pode ser desfeita.">{% csrf_token %}<label class="sr-only" for="delete-password">Senha atual</label><input id="delete-password" type="password" name="password" placeholder="Senha atual" required><label class="sr-only" for="delete-confirmation">Nome de usuário para confirmar</label><input id="delete-confirmation" type="text" name="confirmation" placeholder="Digite {{ request.user.username }}" required><button class="button button-danger" type="submit">Excluir minha conta</button></form>
+  </section>
+</section>
+{% endblock %}

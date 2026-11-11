@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Planejamento de estudos — Central do Vestibulando{% endblock %}
+{% block content %}
+<section class="page-shell page-section"><div class="page-heading"><div><p class="eyebrow">Seu ritmo, seus objetivos</p><h1>Planejamento de estudos</h1><p>Monte uma rotina flexível e registre seu progresso. Você pode ajustar qualquer sessão depois.</p></div></div>
+  <div class="planner-layout">
+    <section class="surface-card planner-create"><p class="eyebrow">Novo plano</p><h2>Organize sua semana</h2>
+      <form method="post">{% csrf_token %}{% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}{% if field.name != "target_exams" and field.name != "subjects" %}{% include "partials/field.html" with field=field %}{% endif %}{% endfor %}
+        <fieldset class="form-fieldset"><legend>Vestibulares-alvo</legend>{{ form.target_exams }}{% for error in form.target_exams.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</fieldset>
+        <fieldset class="form-fieldset"><legend>Matérias para estudar</legend>{{ form.subjects }}{% for error in form.subjects.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</fieldset>
+        <button class="button button-full" type="submit">Criar plano e sugerir semana</button>
+      </form>
+      <p class="field-help planner-note">A sugestão distribui as matérias selecionadas ao longo dos próximos sete dias. Ajuste datas, duração e assuntos quando quiser.</p>
+    </section>
+    <div class="planner-side">
+      <section class="surface-card"><div class="section-heading"><div><p class="eyebrow">Sua rotina</p><h2>Planos ativos</h2></div></div><div class="simple-card-list">{% for plan in plans %}<article><div><strong><a href="{% url 'studies:plan_detail' plan.pk %}">{{ plan.title }}</a></strong><span>{{ plan.subjects.count }} matéria{{ plan.subjects.count|pluralize:"s" }} · {{ plan.weekly_hours }} h por semana</span></div><a class="text-link" href="{% url 'studies:plan_detail' plan.pk %}">Abrir →</a></article>{% empty %}<p class="empty-note">Você ainda não criou um plano de estudos.</p>{% endfor %}</div></section>
+      <section class="surface-card"><div class="section-heading"><div><p class="eyebrow">Acompanhe a evolução</p><h2>Resultados de simulados</h2></div></div>
+        <form method="post" action="{% url 'studies:add_mock_result' %}" class="compact-form">{% csrf_token %}{% for field in result_form %}{% include "partials/field.html" with field=field %}{% endfor %}<button class="button button-outline" type="submit">Registrar resultado</button></form>
+        <div class="simple-card-list result-list">{% for result in results %}<article><div><strong>{{ result.title }}</strong><span>{{ result.taken_on|date:"d/m/Y" }}{% if result.exam %} · {{ result.exam.name }}{% endif %}</span></div><span class="score-value">{{ result.score|floatformat:2 }}{% if result.maximum_score %} / {{ result.maximum_score|floatformat:2 }}{% endif %}</span></article>{% empty %}<p class="empty-note">Seus resultados registrados aparecerão aqui.</p>{% endfor %}</div>
+      </section>
+    </div>
+  </div>
+</section>
+{% endblock %}

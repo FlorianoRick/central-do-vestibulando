@@ -1,35 +1,92 @@
 # Central do Vestibulando
 
-## Visão geral
-Esta aplicação é uma primeira versão funcional de uma plataforma centralizadora de vestibulares do Brasil. O objetivo é reunir informações sobre processos seletivos, prazos, provas anteriores, comparações e materiais de estudo em um portal moderno e organizado.
+Plataforma Django em português para organizar processos seletivos, prazos oficiais, provas, materiais e planos de estudo.
 
-## Arquitetura atual
-- Frontend: Next.js, React, TypeScript e Tailwind CSS
-- Roteamento: App Router do Next.js
-- Organização: páginas por seção e dados centralizados em `src/data/site-data.ts`
-- Componentização: header, footer e blocos reutilizáveis para visão geral e navegação
+## O que está implementado
 
-Consulte também [docs/arquitetura.md](docs/arquitetura.md) para a visão completa do projeto e do planejamento de expansão.
+- Catálogo pesquisável de vestibulares, instituições, cursos, estados e tipos de processo, com filtros e comparação lado a lado.
+- Páginas de detalhe com inscrições, datas, documentos, prova, taxa, vagas, programa e situação de verificação.
+- Calendário em lista, semana e mês, filtros por instituição e processos, aviso de conflito entre provas selecionadas e exportação ICS.
+- Acervo pesquisável de provas anteriores e gabaritos, com indicação de fonte oficial.
+- Materiais organizados por matéria e comparação de matérias cadastradas para até três vestibulares.
+- Cadastro, entrada com usuário ou e-mail, recuperação e alteração de senha, perfil, preferências e exclusão da conta.
+- Favoritos de vestibulares, materiais salvos, avisos internos, planos de estudo, sessões editáveis e resultados de simulados.
+- Sugestões de sessões para sete dias, com prioridade para matérias compartilhadas quando o programa foi verificado.
+- Painel Django Admin para conteúdo, fontes, documentos, revisões e histórico de alteração dos processos seletivos.
+- Configuração local com SQLite e produção com PostgreSQL, Gunicorn e WhiteNoise.
 
-## Como executar
-```bash
-npm install
-npm run dev
+O comando `seed_demo_data` cria nomes de processos conhecidos e guias de exemplo. Esses registros não contêm prazos ou links oficiais e aparecem marcados como demonstrativos. Cadastros só podem ser confirmados no painel com uma fonte oficial; datas não são inventadas.
+
+## Estrutura
+
+```text
+config/                    Configuração Django, URLs e servidores WSGI/ASGI
+apps/core/                 Página inicial, páginas informativas e comandos
+apps/accounts/             Perfil, autenticação, favoritos, preferências e avisos
+apps/admissions/           Instituições, processos, documentos, calendário e provas
+apps/studies/              Matérias, materiais, comparação e planejamento
+apps/news/                 Notícias e comunicados
+templates/                 Template base e componentes compartilhados
+static/                    CSS e JavaScript próprios
+docs/references/           Prompt de projeto e wireframe usados como referência
 ```
 
-Acesse http://localhost:3000.
+## Dados e relacionamentos
 
-## Funcionalidades implementadas
-- Dashboard inicial com métricas e destaques
-- Catálogo de vestibulares
-- Página de detalhe por vestibular
-- Calendário resumido de eventos
-- Banco de provas anteriores e gabaritos
-- Página de comparação de processos
-- Planejamento de estudos
-- Seção de notícias e instituição
-- Navegação e estrutura preparada para expansão
+- Uma instituição possui processos seletivos; cada processo pode relacionar cursos, matérias, documentos, eventos e provas.
+- Provas anteriores podem relacionar uma matéria e guardar arquivo ou link da prova, gabarito e resolução.
+- Uma conta usa o sistema de autenticação do Django e possui perfil e preferências individuais.
+- Favoritos, materiais salvos, avisos e resultados de simulados pertencem ao usuário autenticado.
+- Um plano pertence a um usuário, relaciona vestibulares e matérias, e contém sessões ajustáveis.
+- Notícias e materiais aceitam fontes e marcação de conteúdo demonstrativo.
 
-## Observações importantes
-- Os dados desta primeira versão são demonstrativos e devem ser validados em produção com fontes oficiais.
-- A aplicação foi estruturada para receber facilmente novas instituições, vestibulares e conteúdos.
+As migrações de cada aplicativo ficam em `apps/*/migrations/`. O banco local é criado em `db.sqlite3`; configure `DATABASE_URL` para PostgreSQL.
+
+## Autenticação e administração
+
+O cadastro usa `django.contrib.auth`, validadores de senha do Django e hash seguro. O login aceita nome de usuário ou e-mail. As páginas privadas filtram os dados pelo usuário autenticado. A recuperação de senha usa os formulários e tokens do Django; localmente o e-mail é escrito no console. Para enviar mensagens em produção, configure as variáveis SMTP indicadas em `.env.example`.
+
+Crie uma conta administrativa com `python manage.py createsuperuser` e entre em `/admin/`. Somente usuários autorizados pelo Django podem administrar conteúdo. Ao confirmar um processo seletivo, o painel exige uma fonte oficial e registra quem verificou e quando.
+
+## Executar localmente
+
+Requer Python 3.12 ou mais recente.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+python manage.py migrate
+python manage.py seed_demo_data
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+Abra `http://127.0.0.1:8000/`. O banco SQLite é usado quando `DATABASE_URL` está vazio. O arquivo `.env` é local e não deve ser enviado ao Git.
+
+## Verificações
+
+```powershell
+python manage.py check
+python manage.py test
+```
+
+## Publicação no Render
+
+O `render.yaml` descreve um serviço web e um banco PostgreSQL. O `build.sh` instala dependências e coleta arquivos estáticos. No início do serviço, o comando configurado aplica migrações, cria dados demonstrativos idempotentes e inicia Gunicorn.
+
+Configure `SECRET_KEY`, `DJANGO_DEBUG=false`, `DATABASE_URL`, `ALLOWED_HOSTS` e `CSRF_TRUSTED_ORIGINS` no ambiente. O Blueprint gera uma chave e conecta o PostgreSQL. Faça uma cópia de segurança do banco antes de atualizações importantes.
+
+O armazenamento de arquivos carregados usa o armazenamento local padrão do Django. A instância gratuita/efêmera do Render não preserva mídia entre substituições do serviço; configure um armazenamento persistente compatível com S3 antes de publicar documentos importantes. Não há credenciais de armazenamento incluídas neste repositório.
+
+## Integrações e dados
+
+- A exportação `.ics` está implementada e inclui apenas eventos oficiais confirmados.
+- E-mail externo depende de configuração SMTP; notificações por push, Google Calendar, APIs de instituições e coleta automatizada ainda não estão conectados.
+- A fila administrativa permite revisar alterações manualmente. Não há scraping automático nem tentativa de contornar regras de sites.
+- Editais, provas, gabaritos e prazos devem ser adicionados por um administrador com fonte verificável. O banco de demonstração contém apenas exemplos sinalizados.
+
+## Referências
+
+O wireframe anexado e o prompt original estão preservados em `docs/references/`.

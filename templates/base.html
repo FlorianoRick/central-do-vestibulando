@@ -1,0 +1,81 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Acompanhe vestibulares, prazos oficiais, provas anteriores e materiais de estudo em um só lugar.">
+  <title>{% block title %}Central do Vestibulando{% endblock %}</title>
+  <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <script src="{% static 'js/site.js' %}" defer></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{% url 'core:home' %}" aria-label="Central do Vestibulando — início">
+        <span class="brand-mark" aria-hidden="true">CV</span>
+        <span class="brand-name">Central do <strong>Vestibulando</strong></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="main-navigation" data-menu-toggle>
+        <span class="menu-toggle-icon" aria-hidden="true">☰</span><span class="sr-only" data-menu-label>Abrir menu</span>
+      </button>
+      <nav class="main-navigation" id="main-navigation" aria-label="Navegação principal" data-menu>
+        <a href="{% url 'core:home' %}" class="{% if request.resolver_match.app_name == 'core' and request.resolver_match.url_name == 'home' %}is-current{% endif %}">Início</a>
+        <a href="{% url 'admissions:list' %}" class="{% if request.resolver_match.app_name == 'admissions' and request.resolver_match.url_name == 'list' %}is-current{% endif %}">Vestibulares</a>
+        <a href="{% url 'admissions:calendar' %}">Calendário</a>
+        <a href="{% url 'admissions:institutions' %}">Instituições</a>
+        <a href="{% url 'admissions:papers' %}">Provas e gabaritos</a>
+        <a href="{% url 'studies:list' %}" class="{% if request.resolver_match.app_name == 'studies' %}is-current{% endif %}">Materiais</a>
+        <a href="{% url 'news:list' %}" class="{% if request.resolver_match.app_name == 'news' %}is-current{% endif %}">Notícias</a>
+      </nav>
+      <div class="header-account">
+        {% if request.user.is_authenticated %}
+          <a class="account-link" href="{% url 'accounts:account' %}">Minha conta</a>
+          <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link-button" type="submit">Sair</button></form>
+        {% else %}
+          <a class="account-link" href="{% url 'accounts:login' %}">Entrar</a>
+          <a class="button button-small" href="{% url 'accounts:register' %}">Criar conta</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="message-stack" role="status" aria-live="polite">
+      {% for message in messages %}<div class="message message-{{ message.tags|default:'info' }}">{{ message }}</div>{% endfor %}
+    </div>
+  {% endif %}
+
+  <main id="conteudo" class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a class="brand brand-footer" href="{% url 'core:home' %}"><span class="brand-mark" aria-hidden="true">CV</span><span class="brand-name">Central do <strong>Vestibulando</strong></span></a>
+        <p>Informação organizada para você planejar o próximo passo.</p>
+      </div>
+      <div class="footer-column">
+        <h2>Explorar</h2>
+        <a href="{% url 'admissions:list' %}">Vestibulares</a>
+        <a href="{% url 'admissions:institutions' %}">Instituições</a>
+        <a href="{% url 'admissions:calendar' %}">Calendário</a>
+        <a href="{% url 'admissions:papers' %}">Provas anteriores</a>
+        <a href="{% url 'admissions:answer_keys' %}">Gabaritos</a>
+      </div>
+      <div class="footer-column">
+        <h2>Plataforma</h2>
+        <a href="{% url 'studies:list' %}">Materiais de estudo</a>
+        <a href="{% url 'studies:planner' %}">Planejamento</a>
+        <a href="{% url 'news:list' %}">Notícias</a>
+        <a href="{% url 'core:privacy' %}">Privacidade</a>
+      </div>
+    </div>
+    <div class="footer-bottom"><span>© {% now "Y" %} Central do Vestibulando</span><a href="{% url 'core:terms' %}">Termos de uso</a></div>
+  </footer>
+</body>
+</html>

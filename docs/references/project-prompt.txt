@@ -1,0 +1,1164 @@
+# PROJECT PROMPT — CENTRAL DO VESTIBULANDO
+
+## Complete Development of a Brazilian University Entrance Exam Platform
+
+---
+
+# 1. ROLE AND PROJECT MISSION
+Act as a Senior Full-Stack Python Developer, Django Architect, UI/UX Designer, Database Designer, and Software Engineer.
+
+Your task is to design and develop a complete, functional, modern, responsive, and maintainable educational web platform called **Central do Vestibulando**.
+
+The platform's main purpose is to centralize information about university entrance examinations (*vestibulares*) from multiple Brazilian educational institutions in one place.
+
+Currently, students often need to manually access dozens of different websites, university portals, examination boards, official announcements, calendars, and PDF documents to find important information about admission processes.
+
+This project aims to solve that problem by bringing all relevant information together in a single platform.
+
+The student should be able to access the website and quickly find:
+
+- University entrance examination dates.
+- Registration periods and deadlines.
+- Official announcements and examination manuals.
+- Previous examination papers.
+- Official answer keys.
+- Study materials and preparation tips.
+- Institution and course information.
+- Important announcements and updates.
+- Personalized study organization tools.
+- Information about different admission processes.
+The platform should be designed to become a centralized reference point for Brazilian university applicants.
+
+It must be expandable, allowing new institutions, examinations, documents, and educational resources to be added without requiring major changes to the existing architecture.
+
+**IMPORTANT: The entire user-facing website must be developed in Brazilian Portuguese (pt-BR), even though this project specification is written in English.**
+
+All visible text, navigation labels, buttons, forms, notifications, validation messages, descriptions, dates, and educational content must be written in natural Brazilian Portuguese.
+
+The source code should prioritize readability, simplicity, consistency, and ease of maintenance.
+
+---
+
+# 2. MANDATORY DESIGN REFERENCE — ATTACHED WIREFRAME
+The attached wireframe image is the primary visual and structural reference for this project.
+
+**You MUST carefully inspect the attached wireframe before implementing any frontend components or pages.**
+
+The wireframe is not merely an optional inspiration or a general visual suggestion. It is the design blueprint that the final interface must follow.
+
+The final website must preserve the original visual structure, layout organization, proportions, component positioning, and navigation logic illustrated in the reference.
+
+### 2.1 Required wireframe structure
+The attached reference illustrates the following screens and interface elements:
+
+1. Home page.
+2. Login page.
+3. User registration page.
+4. User account area.
+5. Vestibulares listing page.
+6. Study materials page.
+7. News portal.
+8. Shared website header.
+9. Shared website footer.
+Implement these screens following the original wireframe structure.
+
+### 2.2 Home page
+Follow the composition illustrated in the home page wireframe.
+
+Preserve the original organization of the main content, featured information areas, examination information sections, and supporting content.
+
+Complete the missing details with suitable content related to the project's educational purpose.
+
+Do not invent an entirely different home page layout.
+
+### 2.3 Login and registration pages
+Reproduce the login and registration layouts shown in the wireframe.
+
+Maintain their original arrangement, form positioning, content hierarchy, and relationship between informational and form areas.
+
+Provide functional authentication forms, including validation and feedback.
+
+### 2.4 User account area
+Follow the user area structure illustrated in the reference.
+
+Preserve the original organization of the account information and user data sections.
+
+Add relevant account functionalities inside the established layout without changing its main structure.
+
+### 2.5 Vestibulares page
+Follow the examination listing layout shown in the wireframe.
+
+Use the illustrated card-based organization and maintain the same visual hierarchy.
+
+Include the necessary examination information inside these cards.
+
+### 2.6 Study materials page
+Follow the original division between subject selection and study tips/materials.
+
+Maintain the two-section organization illustrated in the reference.
+
+### 2.7 News page
+Follow the news portal structure shown in the wireframe.
+
+Maintain the original card arrangement and information hierarchy.
+
+Each news card should contain relevant information such as a thumbnail, title, description, publication date, and source.
+
+### 2.8 Header and footer
+Implement a shared header and footer based on the attached sketches.
+
+The header must maintain a consistent position and visual identity throughout the website.
+
+The footer must follow the reference structure, containing the necessary institutional links and basic platform information.
+
+### 2.9 Strict design preservation rules
+Follow these requirements throughout development:
+
+- Do not replace the wireframe with a completely different visual concept.
+- Do not redesign the page hierarchy.
+- Do not randomly rearrange the illustrated sections.
+- Do not introduce unrelated sidebars, layouts, or navigation structures.
+- Do not turn the entire website into a generic administrative dashboard.
+- Do not create excessive visual elements that are not supported by the reference.
+- Do not change the fundamental positioning of the main content areas.
+- Do not use a different page structure simply because another layout looks more fashionable.
+You may complete the wireframe with appropriate spacing, typography, colors, borders, icons, shadows, illustrations, and other professional visual details.
+
+However, these improvements must complement the original design rather than replace it.
+
+**The wireframe defines the layout. Your job is to transform it into a polished, complete, functional, and professional website without escaping from its original design.**
+
+### 2.10 Handling missing design details
+The wireframe is intentionally a low-fidelity structural sketch.
+
+When specific text, icons, spacing, or smaller interface details are unclear:
+
+- Interpret the intended functionality.
+- Use consistent design decisions.
+- Maintain the original component placement.
+- Complete the missing elements in a visually coherent manner.
+- Follow the project's color palette.
+- Reuse the same components throughout the website.
+Do not use the low fidelity of the wireframe as a reason to create an unrelated design.
+
+---
+
+# 3. COLOR PALETTE AND VISUAL IDENTITY
+The website must follow the following color palette strictly.
+
+These colors are mandatory and should define the platform's visual identity.
+
+### Primary colors
+ColorHEXUsageMain Blue#2457C5Primary buttons, links, active navigation, important actionsDeep Blue#172B4DMain headings, navigation, strong text, important sectionsSuccess Green#18794EConfirmed information, successful actions, open registrationsViolet#7040B5Secondary highlights, study resources, complementary accentsBackground#F4F7FBMain website backgroundSurface#FFFFFFCards, forms, panels, content containers
+### Color implementation rules
+Use the colors consistently throughout the entire platform.
+
+The main blue (#2457C5) should be the primary interaction color.
+
+The deep blue (#172B4D) should establish the visual identity and provide strong contrast for headings and navigation.
+
+The success green (#18794E) should be reserved for positive information, confirmation states, and appropriate status indicators.
+
+The violet (#7040B5) should be used for complementary visual elements, study-related sections, and secondary highlights.
+
+The background (#F4F7FB) must establish the main page background.
+
+The surface (#FFFFFF) must be used for cards, content panels, forms, and other elevated interface elements.
+
+Additional neutral colors may be used for text, borders, disabled states, and subtle visual separation, but they must not replace or compete with the mandatory primary palette.
+
+### Visual style
+Create a polished, modern, and minimal interface.
+
+Use:
+
+- Consistent spacing.
+- Clear typography.
+- Rounded corners where appropriate.
+- Subtle borders.
+- Discreet shadows.
+- Clean information hierarchy.
+- Consistent button styles.
+- Reusable cards.
+- Simple icons.
+- Restrained animations.
+- Smooth transitions.
+Avoid excessive gradients, unnecessary decorations, oversized elements, and visual clutter.
+
+The final website should feel like a professional educational platform, not a generic dashboard template.
+
+---
+
+# 4. HOME PAGE — MAIN DASHBOARD
+Develop the homepage according to the attached wireframe.
+
+The homepage should provide immediate access to the most relevant information about university entrance examinations.
+
+### Main information areas
+Include:
+
+- Vestibulares with open registrations.
+- Registrations approaching their deadlines.
+- Upcoming examination dates.
+- Recently published official announcements.
+- Upcoming examination results.
+- Important updates.
+- Featured educational institutions.
+
+### Examination search
+Provide an accessible search field that allows students to search by:
+
+- Institution name.
+- Examination name.
+- Course.
+- State.
+- City.
+- Admission type.
+
+### Quick navigation
+Provide clear navigation to the main sections:
+
+1. Início.
+2. Vestibulares.
+3. Calendário.
+4. Provas anteriores.
+5. Gabaritos.
+6. Materiais de estudo.
+7. Planejamento de estudos.
+8. Instituições.
+9. Notícias.
+The home page must prioritize easy navigation and quick access to important deadlines.
+
+---
+
+# 5. VESTIBULAR CATALOG AND INSTITUTION DATABASE
+Develop a searchable catalog containing university entrance examinations and admission processes from Brazilian educational institutions.
+
+Start with institutions and examination processes such as:
+
+- ENEM.
+- FUVEST — USP.
+- COMVEST — UNICAMP.
+- VUNESP — UNESP.
+- FATEC.
+- UNIFESP.
+- UFRGS.
+- UFPR.
+- UERJ.
+- UNB.
+- IFSP.
+- Other Federal Institutes.
+- Federal universities.
+- State universities.
+- Municipal universities.
+- Private universities.
+Also include relevant national admission processes such as SISU, Prouni, and FIES, maintaining their distinction from traditional entrance examinations.
+
+The catalog must support future expansion without requiring architectural modifications.
+
+### Individual examination pages
+Each examination should have its own detailed information page containing:
+
+- Examination name.
+- Responsible institution.
+- Institution logo, when available.
+- Examination description.
+- Available courses.
+- Admission modalities.
+- Examination locations.
+- Number of available positions, when officially published.
+- Registration fee.
+- Fee exemption information.
+- Registration opening date.
+- Registration deadline.
+- Examination date and time.
+- Result publication date.
+- Enrollment period.
+- Official announcement (edital).
+- Candidate manual.
+- Official registration link.
+- Institution website.
+- Previous examination papers.
+- Official answer keys.
+- Examination syllabus.
+- Additional observations.
+Clearly display the current status of each examination.
+
+### Search and filtering
+Provide filters for:
+
+- Brazilian state.
+- Geographic region.
+- Institution.
+- Institution type.
+- Available courses.
+- Admission modality.
+- Open registrations.
+- Closed registrations.
+- Upcoming examinations.
+- Free admission processes.
+- Examinations offering registration fee exemptions.
+Allow sorting by registration deadline, examination date, institution, and relevance.
+
+---
+
+# 6. CENTRALIZED EXAMINATION CALENDAR
+Develop a centralized calendar containing the important dates of all registered examination processes.
+
+Include:
+
+- Registration opening.
+- Registration closing.
+- Registration fee exemption deadlines.
+- Examination location publication.
+- Examination dates.
+- Answer key publication.
+- Results publication.
+- Admission calls.
+- Enrollment deadlines.
+- Appeal deadlines.
+
+### Calendar functionality
+Implement:
+
+- Monthly visualization.
+- Weekly visualization.
+- Chronological list visualization.
+- Institution filters.
+- Examination filters.
+- Event category differentiation.
+- Countdown indicators.
+- Favorite events.
+- Export functionality.
+Where technically possible, allow students to export events to Google Calendar or download an ICS calendar file.
+
+An important feature should identify examination conflicts, highlighting when two or more selected examinations occur on the same date.
+
+---
+
+# 7. PREVIOUS EXAMINATION PAPERS AND ANSWER KEYS
+Develop a centralized searchable database of previous examination papers.
+
+Each examination record should contain:
+
+- Institution.
+- Examination name.
+- Year.
+- Examination phase.
+- Course or admission modality, when applicable.
+- Examination type.
+- PDF download link.
+- Official answer key link.
+- Commented solution link, when available.
+- Number of questions, when known.
+- Additional observations.
+
+### Available functionality
+Students should be able to:
+
+- Search by institution.
+- Search by year.
+- Search by subject.
+- Filter by examination type.
+- Download PDF documents.
+- Preview PDFs inside the website when technically possible.
+- Browse examination papers by subject.
+- Access official answer keys.
+Create a separate area for commented solutions.
+
+Where explanations are available, present clear educational explanations.
+
+Never invent examination papers, answer keys, or official solutions.
+
+Clearly identify official sources and third-party educational explanations.
+
+---
+
+# 8. STUDY MATERIALS AND EDUCATIONAL CONTENT
+Create a study area organized by school subjects.
+
+Include:
+
+- Mathematics.
+- Physics.
+- Chemistry.
+- Biology.
+- History.
+- Geography.
+- Philosophy.
+- Sociology.
+- Portuguese.
+- Literature.
+- Essay Writing.
+- English.
+- Spanish.
+For each subject, provide a structured area for:
+
+- Study summaries.
+- Theoretical explanations.
+- Important formulas.
+- Mind maps, when available.
+- Practice exercises.
+- Previous examination questions.
+- Commented solutions.
+- Study recommendations.
+- Frequently tested subjects.
+
+### Examination syllabus comparison
+Implement an important feature that allows students to compare the subjects and topics required by different examination processes.
+
+For example:
+
+A student selects FATEC, UNESP, and UNICAMP.
+
+The platform should identify which topics are shared between these examinations and which topics require specific preparation.
+
+Use official examination announcements and published syllabuses as the main sources.
+
+Clearly differentiate officially required topics from supplementary study recommendations.
+
+---
+
+# 9. PERSONAL STUDY PLANNER
+Develop a personalized study organization tool.
+
+Registered users should be able to:
+
+- Select their target examinations.
+- Choose the subjects they need to study.
+- Define weekly study availability.
+- Set daily study goals.
+- Create study schedules.
+- Mark completed subjects.
+- Record difficult topics.
+- Track their learning progress.
+- Schedule revisions.
+- Record mock examination results.
+
+### Intelligent study planning
+Use the student's selected examinations, their dates, the respective syllabuses, and available study hours to suggest a balanced study schedule.
+
+For example:
+
+If a student plans to take FATEC and UNESP examinations, the platform should identify overlapping subjects and suggest a study schedule that prioritizes shared topics while reserving time for examination-specific content.
+
+The student must always be able to manually modify the suggested schedule.
+
+### Progress dashboard
+Display:
+
+- Total study hours.
+- Completed study sessions.
+- Subjects studied.
+- Completed goals.
+- Pending topics.
+- Weekly progress.
+- Upcoming revisions.
+- Mock examination performance.
+Keep the interface simple and easy to understand.
+
+---
+
+# 10. EXAMINATION AND INSTITUTION COMPARISON
+Develop a comparison tool that allows students to compare up to three examinations simultaneously.
+
+Comparison criteria should include:
+
+- Institution.
+- Available courses.
+- Number of positions.
+- Registration fee.
+- Registration period.
+- Examination dates.
+- Number of examination phases.
+- Required subjects.
+- Examination format.
+- Admission criteria.
+- Registration fee exemption.
+- Official announcement links.
+Use a clean comparison table.
+
+The objective is to help students understand the differences between admission processes and decide which examinations best fit their academic goals.
+
+---
+
+# 11. NEWS AND IMPORTANT ANNOUNCEMENTS
+Develop a news section dedicated to Brazilian higher education and university entrance examinations.
+
+Include news about:
+
+- New examination announcements.
+- Registration openings.
+- Deadline extensions.
+- Examination date changes.
+- Answer key publications.
+- Examination results.
+- New admission calls.
+- Changes to admission rules.
+- SISU updates.
+- Prouni updates.
+- FIES updates.
+Each news entry should contain:
+
+- Title.
+- Short description.
+- Related institution.
+- Publication date.
+- Last update date, when applicable.
+- Source.
+- Original article or announcement link.
+- Thumbnail or image, when available and permitted.
+Prioritize important changes affecting registration periods, examination schedules, and admission procedures.
+
+---
+
+# 12. USER REGISTRATION, LOGIN, AND DATABASE INTEGRATION
+This is a mandatory feature.
+
+Implement a real user authentication system using Django's built-in authentication functionality.
+
+**Do not create a simulated login interface or frontend-only authentication. User accounts and their information must be stored in the database.**
+
+The website must allow both anonymous visitors and registered users.
+
+### 12.1 User registration
+Create a fully functional registration page following the attached wireframe.
+
+The registration form should include:
+
+- Full name.
+- Username.
+- Email address.
+- Password.
+- Password confirmation.
+Optional profile information may include:
+
+- City.
+- State.
+- Desired course.
+- Preferred institutions.
+The form must validate all required fields.
+
+Prevent duplicate usernames and email addresses.
+
+Passwords must be stored using Django's secure password-hashing system.
+
+Never store passwords as plain text.
+
+After successful registration, provide clear feedback and allow the user to log in.
+
+### 12.2 Login page
+Create a functional login page following the attached wireframe.
+
+Include:
+
+- Username or email field.
+- Password field.
+- Remember-session functionality when appropriate.
+- Login button.
+- Link to registration.
+- Link to password recovery.
+Display validation messages in Brazilian Portuguese.
+
+### 12.3 Authentication functionality
+Implement:
+
+- User registration.
+- User login.
+- User logout.
+- Session management.
+- Password validation.
+- Password recovery.
+- Protected user pages.
+- User permission management.
+Use Django's authentication and session mechanisms.
+
+Protect private pages using Django's authentication decorators or equivalent permission controls.
+
+### 12.4 User account area
+Create a personalized user area based on the account page in the wireframe.
+
+The user should be able to:
+
+- View personal account information.
+- Edit their profile.
+- Change their password.
+- View saved examinations.
+- Manage study plans.
+- Access saved materials.
+- Track study progress.
+- View notifications.
+- Manage their preferences.
+Provide an option to delete the account, respecting applicable legal requirements.
+
+Visitors must be able to access public examination information without creating an account.
+
+### 12.5 Persistent database storage
+Use PostgreSQL as the production database and Django ORM to manage user records and relationships.
+
+Use Django's built-in User model with an associated Profile model where appropriate, prioritizing a simple and maintainable implementation.
+
+Create database models for:
+
+- User profiles.
+- Favorite examinations.
+- Saved educational materials.
+- Personalized study plans.
+- Study progress.
+- User notifications.
+- User preferences.
+All relevant information must persist after logout and subsequent login.
+
+Do not use browser localStorage as the primary storage for registered users' accounts or study information.
+
+### 12.6 Database security
+Implement:
+
+- Secure password hashing.
+- CSRF protection.
+- Login validation.
+- Permission checks.
+- Secure sessions.
+- Form validation.
+- Protection against unauthorized access.
+- Appropriate database relationships.
+Make sure each user can only access and modify their own private information.
+
+Administrative permissions must remain separate from normal student permissions.
+
+---
+
+# 13. NOTIFICATIONS AND ALERTS
+Develop a notification system that helps students follow their selected examinations.
+
+Notifications may include:
+
+- Registration opening.
+- Registration deadlines.
+- Upcoming examinations.
+- Fee exemption deadlines.
+- New official announcements.
+- Answer key publication.
+- Examination results.
+- Calendar changes.
+- Important updates to favorite examinations.
+Initially, implement an internal notification system.
+
+Prepare the architecture for future email and push notification integration.
+
+Allow users to manage their notification preferences.
+
+Do not simulate external notification services that have not been configured.
+
+---
+
+# 14. ADMINISTRATIVE MANAGEMENT PANEL
+Develop a protected administrative area for authorized platform administrators.
+
+Use Django Admin as the primary administrative management system.
+
+The administrator must be able to:
+
+- Create institutions.
+- Edit institution information.
+- Register examinations.
+- Update examination schedules.
+- Upload official announcements.
+- Register previous examination papers.
+- Add answer keys.
+- Manage educational resources.
+- Create and edit news articles.
+- Manage syllabus information.
+- Review automatically detected updates.
+- Identify outdated information.
+- Manage user permissions.
+- View historical changes.
+
+### Data verification system
+Every important examination record must contain:
+
+- Official source URL.
+- Date of verification.
+- Last update date.
+- Responsible administrator, when applicable.
+- Verification status.
+Use the following statuses:
+
+- Officially confirmed.
+- Awaiting publication.
+- Under review.
+- Registration closed.
+- Information updated.
+- Verification required.
+Do not present estimated dates as confirmed official information.
+
+---
+
+# 15. AUTOMATED DATA COLLECTION AND UPDATES
+Develop an expandable architecture capable of collecting and updating information from different official institutions.
+
+Consider:
+
+- Public APIs.
+- Official institutional websites.
+- Official examination announcements.
+- Examination board portals.
+- Official PDF documents.
+- Manual administrative updates.
+- Automated monitoring of publicly available pages, where legally and technically permitted.
+Automation should respect website terms of use, access policies, and technical restrictions.
+
+Do not implement indiscriminate scraping or attempt to bypass access restrictions.
+
+### Update workflow
+The system should be able to:
+
+1. Detect newly published official announcements.
+2. Record the discovery date and source URL.
+3. Identify possible changes to previously registered dates.
+4. Flag potentially outdated information.
+5. Send detected changes for administrative review.
+6. Update the official record only after validation.
+7. Store a history of modifications.
+When automatic collection is not possible, administrators must be able to manually register the information.
+
+Information awaiting verification must be clearly identified.
+
+Accuracy and reliability are more important than displaying a large quantity of information.
+
+---
+
+# 16. TECHNOLOGIES AND SOFTWARE ARCHITECTURE
+Develop the entire project using **Python as the primary programming language**, prioritizing a simple, integrated, scalable, and maintainable architecture.
+
+The central framework must be **Django**.
+
+Avoid unnecessary architectural complexity, multiple frontend projects, and excessive dependencies.
+
+The project should use a traditional Django application structure, integrating the frontend, backend, authentication, database, and administrative functionalities.
+
+### 16.1 Backend — Python
+Use:
+
+- **Python 3:** Main programming language.
+- **Django:** Main web development framework.
+- **Django ORM:** Database management and relationships.
+- **Django Authentication:** User registration, login, logout, password recovery, and permission management.
+- **Django Admin:** Administrative management interface.
+- **Django Forms:** Form creation and server-side validation.
+- **Django REST Framework:** Only when an API is genuinely required for external integrations or specific functionalities.
+Django must handle the platform's business logic, data processing, authentication, search functionality, filters, and database operations.
+
+### 16.2 Frontend — Templates and User Interface
+Prioritize Django Templates as the primary frontend rendering system.
+
+Use:
+
+- **HTML5:** Page structure and content.
+- **CSS3:** Styling and visual identity.
+- **JavaScript:** Interactive elements, dynamic filtering, calendars, and charts.
+- **Bootstrap 5 or custom CSS:** Responsive layouts and reusable visual components.
+- **HTMX (optional):** Lightweight asynchronous updates without requiring a separate frontend application.
+- **Alpine.js (optional):** Simple frontend interactions when needed.
+Prefer reusable Django templates and template inheritance.
+
+Create a shared base template containing the global header, navigation, content structure, and footer.
+
+Avoid using React, Next.js, or TypeScript unless a specific technical requirement makes them necessary.
+
+The priority is to keep the application integrated and easy to understand.
+
+### 16.3 Database
+Use:
+
+- **PostgreSQL:** Main production database.
+- **SQLite:** Optional local development database for easier initial setup.
+- **Django ORM:** Database queries and relationships.
+- **Django Migrations:** Database schema management.
+The database should support:
+
+- Institutions.
+- Entrance examinations.
+- Admission processes.
+- Courses.
+- Events and examination dates.
+- Official documents.
+- Previous examination papers.
+- Answer keys.
+- Subjects.
+- Syllabuses.
+- Questions and solutions.
+- News.
+- Users and profiles.
+- Favorites.
+- Study schedules.
+- Study progress.
+- Notifications.
+- Sources.
+- Update history.
+Use clear relationships between models and avoid unnecessary data duplication.
+
+### 16.4 File storage
+Use Django's file management capabilities for uploaded and published documents.
+
+Support:
+
+- Official announcement PDFs.
+- Previous examination papers.
+- Answer keys.
+- Study materials.
+- Institution images and logos.
+For production, use persistent external object storage compatible with S3 or an equivalent service when appropriate.
+
+Do not rely on temporary server storage for important uploaded documents.
+
+### 16.5 Automation and document processing
+Use Python libraries when useful:
+
+- **Requests or HTTPX:** Communication with external APIs and websites.
+- **BeautifulSoup:** Extraction of publicly available web information when permitted.
+- **Celery:** Background and scheduled tasks when the project requires them.
+- **Redis:** Optional task queue support.
+- **PyMuPDF or pypdf:** PDF reading and document processing.
+Keep automation modular.
+
+Do not install or integrate every optional library immediately. Only add dependencies when an actual implemented feature requires them.
+
+### 16.6 Recommended project organization
+Use separate Django applications for different areas of the platform.
+
+Suggested structure:
+
+```
+central_vestibulando/
+│
+├── manage.py
+├── requirements.txt
+├── build.sh
+│
+├── config/
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── apps/
+│   ├── core/
+│   ├── accounts/
+│   ├── institutions/
+│   ├── vestibulares/
+│   ├── calendar/
+│   ├── exams/
+│   ├── studies/
+│   ├── planning/
+│   ├── news/
+│   └── notifications/
+│
+├── templates/
+│   ├── base.html
+│   ├── home.html
+│   ├── accounts/
+│   ├── vestibulares/
+│   ├── calendar/
+│   ├── exams/
+│   ├── studies/
+│   ├── planning/
+│   ├── news/
+│   └── user/
+│
+├── static/
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+└── media/
+    └── documents/
+```
+This is a suggested organization. Adjust it when necessary, but keep the project logically separated.
+
+### 16.7 Coding simplicity and maintainability — VERY IMPORTANT
+One of the project's primary technical requirements is keeping the source code simple, readable, and easy to understand.
+
+The application should be developed with clean and straightforward code rather than unnecessarily complicated abstractions.
+
+Follow these rules:
+
+1. Prefer simple solutions over unnecessarily complex implementations.
+2. Use clear and descriptive variable, function, and class names.
+3. Keep functions reasonably small and focused.
+4. Separate responsibilities between models, views, forms, templates, and services.
+5. Avoid excessively long Python files.
+6. Avoid unnecessary inheritance and complicated design patterns.
+7. Avoid introducing additional libraries when native Django functionality is sufficient.
+8. Add comments when they improve understanding, not simply to repeat the code.
+9. Maintain consistent formatting and naming conventions.
+10. Make the project understandable to someone with basic Python and web development knowledge.
+11. Avoid duplicating logic across different views and applications.
+12. Do not create abstractions that do not provide a real benefit.
+Whenever possible, use straightforward Django features instead of building custom systems from scratch.
+
+The priority is a functional and professional project that remains easy to read, learn from, debug, and maintain.
+
+### 16.8 Render deployment compatibility
+Prepare the application for deployment on Render.
+
+Use:
+
+- Python runtime.
+- Django application.
+- Gunicorn WSGI server.
+- PostgreSQL database.
+- WhiteNoise for static file serving when appropriate.
+- `requirements.txt` for dependencies.
+- `build.sh` for deployment preparation.
+- Environment variables for sensitive settings.
+Configure the project for both local development and production.
+
+Production settings must include appropriate security configurations, environment variables, allowed hosts, CSRF trusted origins, database connection, and static file management.
+
+Do not expose private credentials in source code.
+
+---
+
+# 17. SECURITY, ACCESSIBILITY, AND QUALITY
+Implement appropriate security and development practices.
+
+### Security
+Include:
+
+- Server-side form validation.
+- CSRF protection.
+- Protection against SQL injection.
+- XSS protection.
+- Secure password handling.
+- Authentication and authorization controls.
+- Protected administrative routes.
+- Secure session configuration.
+- Environment variable management.
+- Error handling.
+- Logging for important operations.
+- Database backup considerations.
+- LGPD compliance.
+
+### Accessibility
+Include:
+
+- Appropriate color contrast.
+- Keyboard navigation.
+- Alternative text for images.
+- Clearly identified form labels.
+- Accessible validation messages.
+- Semantic HTML.
+- Responsive layouts.
+- Compatibility with assistive technologies.
+
+### Performance
+Avoid unnecessary JavaScript and heavy frontend dependencies.
+
+Optimize images and static files.
+
+Use database indexes when justified.
+
+Avoid unnecessary database queries.
+
+Use pagination for long lists of examinations, documents, and news articles.
+
+Prioritize performance without making the code unnecessarily complicated.
+
+---
+
+# 18. DEVELOPMENT STRATEGY AND IMPLEMENTATION PHASES
+Develop the platform incrementally.
+
+Do not attempt to implement everything in a single oversized file or an unorganized development process.
+
+### PHASE 1 — Project foundation and wireframe implementation
+
+- Inspect the attached wireframe.
+- Analyze the existing repository, if available.
+- Establish the Django project structure.
+- Configure Python and Django.
+- Set up database connections.
+- Create shared templates.
+- Implement the mandatory color palette.
+- Develop the shared header and footer.
+- Create the homepage following the wireframe.
+- Create the login and registration pages.
+- Create the user account page.
+- Implement the vestibulares page.
+- Implement the study materials page.
+- Implement the news page.
+- Verify desktop and mobile responsiveness.
+The initial visual implementation must follow the attached wireframe closely.
+
+### PHASE 2 — Database and authentication
+
+- Configure database models.
+- Implement database migrations.
+- Implement user registration.
+- Implement user login and logout.
+- Implement password validation.
+- Implement password recovery.
+- Implement the user profile.
+- Protect private account pages.
+- Test account creation and data persistence.
+Make sure authentication is fully functional before continuing to advanced user features.
+
+### PHASE 3 — Examination information system
+
+- Implement institution management.
+- Implement examination registration.
+- Develop the searchable examination catalog.
+- Create individual examination pages.
+- Implement filtering and sorting.
+- Implement examination status indicators.
+- Implement official source registration.
+- Create the centralized calendar.
+
+### PHASE 4 — Educational resources
+
+- Implement previous examination paper management.
+- Implement answer key management.
+- Create PDF download and preview functionality.
+- Develop the subject database.
+- Implement educational material management.
+- Create syllabus comparisons.
+- Develop commented solution sections when content is available.
+
+### PHASE 5 — Personalized student tools
+
+- Implement saved examinations.
+- Implement favorites.
+- Develop personal study planning.
+- Implement study progress tracking.
+- Implement goals and revision scheduling.
+- Develop examination comparison.
+- Implement user notifications.
+
+### PHASE 6 — Administration and data automation
+
+- Complete Django Admin configuration.
+- Implement structured examination updates.
+- Create source verification functionality.
+- Implement update history.
+- Develop automated information checks when feasible.
+- Add administrative review procedures.
+
+### PHASE 7 — Final testing and deployment
+
+- Test all major functionalities.
+- Fix errors.
+- Verify database persistence.
+- Test user authentication.
+- Verify responsive behavior.
+- Test accessibility.
+- Optimize performance.
+- Configure production environment.
+- Prepare deployment on Render.
+- Document installation and maintenance.
+
+---
+
+# 19. STRICT DEVELOPMENT RULES
+Follow these requirements throughout the entire development process.
+
+1. Do not create only a visual prototype. Build real, functional features.
+2. Do not create decorative buttons that perform no action.
+3. Do not use fictional dates as real examination deadlines.
+4. Do not present demonstration information as officially confirmed.
+5. Clearly identify demo records.
+6. Prefer official information sources.
+7. Never invent registration, examination, announcement, or answer key links.
+8. Follow the attached wireframe as the mandatory layout reference.
+9. Do not change the project's main visual structure.
+10. Use the mandatory color palette consistently.
+11. Keep all visible interface content in Brazilian Portuguese.
+12. Use Python and Django as the main technologies.
+13. Keep the code simple, readable, and maintainable.
+14. Do not introduce unnecessary dependencies.
+15. Implement real database-backed authentication.
+16. Ensure user information persists between sessions.
+17. Protect private user information.
+18. Make sure only authorized administrators can manage official information.
+19. Keep the website accessible to visitors without requiring registration.
+20. Make the platform expandable without requiring major architectural changes.
+21. Avoid unnecessary frontend frameworks.
+22. Differentiate implemented features from planned or unconfigured integrations.
+23. Do not claim an external integration is functional unless it has actually been configured and tested.
+24. Preserve existing useful project assets and functionality when modifying an existing repository.
+25. Test the application after significant implementation changes.
+
+---
+
+# 20. EXPECTED FINAL PRODUCT
+The final result should be a complete and functional centralized examination platform for Brazilian students.
+
+A student should be able to enter the platform and quickly:
+
+- Discover which examinations have open registrations.
+- Search for institutions and admission processes.
+- View important examination deadlines.
+- Access official announcements.
+- Download previous examination papers.
+- Find answer keys.
+- Browse educational materials.
+- Compare different examination syllabuses.
+- Organize a personalized study schedule.
+- Register an account.
+- Log in and access personal information.
+- Save favorite examinations.
+- Track study progress.
+- Receive relevant notifications.
+The main competitive advantage of the platform should be the centralization, organization, accessibility, and reliability of Brazilian university entrance examination information.
+
+The design must remain faithful to the attached wireframe, while becoming a polished and professional final interface using the mandatory color palette.
+
+The technical implementation must use Python and Django, with a persistent database and real authentication.
+
+The source code must remain simple and well-organized so that future developers can easily understand and expand the project.
+
+---
+
+# 21. FINAL INSTRUCTIONS TO THE DEVELOPER
+Before writing code, carefully inspect the attached wireframe and analyze the existing project files.
+
+First, understand the intended interface and determine the appropriate Django architecture.
+
+Then:
+
+1. Present a brief implementation overview.
+2. Define the folder structure.
+3. Define the database models and relationships.
+4. Explain how authentication will work.
+5. Identify the main templates and reusable components.
+6. Begin implementing the actual application.
+**Do not stop after presenting a development plan. Continue by building a functional first version.**
+
+If the repository currently contains Next.js, React, or TypeScript files, inspect the existing implementation and preserve useful visual assets and content. However, migrate the application deliberately to the requested Django/Python architecture. Do not leave incompatible Next.js configuration as the active deployment setup.
+
+Implement the website in logical stages, testing each important feature.
+
+At the end of each implementation stage, report:
+
+- What has been implemented.
+- Which functionalities are working.
+- Which database models were created.
+- Which integrations still require configuration.
+- How to run and test the project locally.
+- What remains to be implemented.
+Provide all necessary project files, requirements, migrations, templates, static assets, configuration files, and deployment instructions.
+
+The application must be prepared to run locally and be deployed to Render.
+
+**FINAL PRIORITIES — IN ORDER:**
+
+1. Preserve the main idea and purpose of Central do Vestibulando.
+2. Follow the attached wireframe faithfully.
+3. Use the specified color palette.
+4. Keep the complete user interface in Brazilian Portuguese.
+5. Use Python and Django as the main development technologies.
+6. Implement real user registration, login, authentication, and database persistence.
+7. Build useful and functional examination information features.
+8. Keep the code as simple, readable, and maintainable as possible.
+9. Ensure that the project can be expanded and deployed successfully.
+The final result must be a real, usable, database-backed educational web application — not merely a visual demonstration or an incomplete prototype.

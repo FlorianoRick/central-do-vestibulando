@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Entrar — Central do Vestibulando{% endblock %}
+{% block content %}
+<section class="auth-layout page-shell">
+  <div class="auth-intro">
+    <p class="eyebrow">Bem-vindo de volta</p>
+    <h1>Seu planejamento continua de onde parou.</h1>
+    <p>Acesse sua conta para acompanhar vestibulares salvos, materiais e seu plano de estudos.</p>
+    <ul class="check-list"><li>Salve processos seletivos para acompanhar</li><li>Organize sessões de estudo</li><li>Registre seu progresso</li></ul>
+  </div>
+  <div class="auth-panel surface-card">
+    <p class="eyebrow">Área do estudante</p><h2>Entrar na sua conta</h2>
+    {% if form.non_field_errors %}<div class="form-alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+    <form method="post" novalidate>{% csrf_token %}
+      {% for field in form %}{% include "partials/field.html" with field=field %}{% endfor %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="button button-full" type="submit">Entrar</button>
+    </form>
+    <div class="auth-links"><a href="{% url 'accounts:password_reset' %}">Esqueci minha senha</a><span>Não tem conta? <a href="{% url 'accounts:register' %}">Criar conta</a></span></div>
+  </div>
+</section>
+{% endblock %}
