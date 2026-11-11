@@ -3,7 +3,7 @@ services:
     name: central-do-vestibulando
     runtime: python
     buildCommand: ./build.sh
-    startCommand: python manage.py migrate --noinput && python manage.py seed_demo_data && gunicorn config.wsgi:application
+    startCommand: ./start.sh
     envVars:
       - key: DATABASE_URL
         fromDatabase:

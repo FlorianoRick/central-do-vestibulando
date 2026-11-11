@@ -74,11 +74,23 @@ python manage.py test
 
 ## Publicação no Render
 
-O `render.yaml` descreve um serviço web e um banco PostgreSQL. O `build.sh` instala dependências e coleta arquivos estáticos. No início do serviço, o comando configurado aplica migrações, cria dados demonstrativos idempotentes e inicia Gunicorn.
+O repositório já contém um Blueprint em `render.yaml`, um script de build em `build.sh` e um script de inicialização em `start.sh`.
 
-Configure `SECRET_KEY`, `DJANGO_DEBUG=false`, `DATABASE_URL`, `ALLOWED_HOSTS` e `CSRF_TRUSTED_ORIGINS` no ambiente. O Blueprint gera uma chave e conecta o PostgreSQL. Faça uma cópia de segurança do banco antes de atualizações importantes.
+### Passo a passo
 
-O armazenamento de arquivos carregados usa o armazenamento local padrão do Django. A instância gratuita/efêmera do Render não preserva mídia entre substituições do serviço; configure um armazenamento persistente compatível com S3 antes de publicar documentos importantes. Não há credenciais de armazenamento incluídas neste repositório.
+1. Entre no [Render Dashboard](https://dashboard.render.com/) e escolha **New → Blueprint Instance**.
+2. Conecte o GitHub, selecione `FlorianoRick/central-do-vestibulando` e a branch `master`.
+3. Revise os recursos do Blueprint. Ele cria o serviço web e o PostgreSQL; confirme os planos e custos exibidos no Render.
+4. Clique em **Apply**. O Render instala `requirements.txt`, coleta os arquivos estáticos, aplica as migrações, carrega dados demonstrativos e inicia o Gunicorn.
+5. Acompanhe **Events** e **Logs** do serviço. Quando o deploy terminar, abra o endereço `.onrender.com` mostrado no Dashboard.
+6. Para administrar conteúdo, abra o **Shell** do serviço e execute `python manage.py createsuperuser`. Acesse `/admin/` no domínio do site.
+7. Cadastre instituições, processos e fontes oficiais. Os 14 processos e guias criados automaticamente são demonstrativos, sem prazos ou links oficiais.
+
+O Blueprint gera `SECRET_KEY`, define `DJANGO_DEBUG=false`, conecta `DATABASE_URL` ao PostgreSQL e define os hosts e origens CSRF para `.onrender.com`. Se usar domínio próprio, acrescente o domínio a `ALLOWED_HOSTS` e `CSRF_TRUSTED_ORIGINS` nas variáveis do serviço.
+
+O armazenamento de arquivos carregados usa o armazenamento local padrão do Django. O disco do serviço não é persistente entre deploys sem um disco dedicado; configure um armazenamento compatível com S3 antes de publicar documentos importantes. Não há credenciais de armazenamento incluídas neste repositório.
+
+O envio de recuperação de senha por e-mail também precisa de um serviço SMTP. Configure as variáveis `EMAIL_*` listadas em `.env.example`; sem isso, Django usa o backend de console e não entrega e-mails aos estudantes.
 
 ## Integrações e dados
 
