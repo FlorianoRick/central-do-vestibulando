@@ -1,8 +1,11 @@
 import json
-from io import BytesIO
+import os
+from io import BytesIO, StringIO
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.core.management import call_command, CommandError
 from django.db import IntegrityError, transaction
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -12,6 +15,63 @@ from PIL import Image
 from .forms import SiteAppearanceForm
 from .models import SiteAppearance, SiteAppearanceAsset, SiteAppearanceHistory
 from .services import get_active_appearance
+
+
+class BootstrapSuperuserTests(TestCase):
+    bootstrap_environment = {
+        "BOOTSTRAP_SUPERUSER_USERNAME": "first-admin",
+        "BOOTSTRAP_SUPERUSER_EMAIL": "first-admin@example.com",
+        "BOOTSTRAP_SUPERUSER_PASSWORD": "m8$PzqR4!Vx2#Lk9",
+    }
+
+    def test_bootstrap_creates_one_superuser_without_logging_the_password(self):
+        output = StringIO()
+        with patch.dict(os.environ, self.bootstrap_environment):
+            call_command("bootstrap_superuser", stdout=output)
+            call_command("bootstrap_superuser", stdout=output)
+
+        user = get_user_model().objects.get(username="first-admin")
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.check_password(self.bootstrap_environment["BOOTSTRAP_SUPERUSER_PASSWORD"]))
+        self.assertEqual(get_user_model().objects.filter(is_superuser=True).count(), 1)
+        self.assertNotIn(self.bootstrap_environment["BOOTSTRAP_SUPERUSER_PASSWORD"], output.getvalue())
+
+    def test_bootstrap_without_environment_values_is_a_safe_no_op(self):
+        with patch.dict(os.environ, {name: "" for name in (
+            "BOOTSTRAP_SUPERUSER_USERNAME",
+            "BOOTSTRAP_SUPERUSER_EMAIL",
+            "BOOTSTRAP_SUPERUSER_PASSWORD",
+        )}):
+            call_command("bootstrap_superuser", stdout=StringIO())
+
+        self.assertFalse(get_user_model().objects.filter(is_superuser=True).exists())
+
+    def test_partial_bootstrap_configuration_fails_without_creating_an_account(self):
+        incomplete_environment = {
+            "BOOTSTRAP_SUPERUSER_USERNAME": "first-admin",
+            "BOOTSTRAP_SUPERUSER_EMAIL": "",
+            "BOOTSTRAP_SUPERUSER_PASSWORD": "",
+        }
+        with patch.dict(os.environ, incomplete_environment):
+            with self.assertRaises(CommandError):
+                call_command("bootstrap_superuser", stdout=StringIO())
+
+        self.assertFalse(get_user_model().objects.filter(is_superuser=True).exists())
+
+    def test_existing_superuser_is_never_changed_by_bootstrap(self):
+        user_model = get_user_model()
+        existing_user = user_model.objects.create_superuser(
+            username="existing-admin",
+            email="existing-admin@example.com",
+            password="Different-Password-749!",
+        )
+        with patch.dict(os.environ, self.bootstrap_environment):
+            call_command("bootstrap_superuser", stdout=StringIO())
+
+        existing_user.refresh_from_db()
+        self.assertTrue(existing_user.check_password("Different-Password-749!"))
+        self.assertFalse(user_model.objects.filter(username="first-admin").exists())
 
 
 class SiteAppearanceTests(TestCase):

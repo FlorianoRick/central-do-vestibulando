@@ -56,6 +56,10 @@ Abra `/admin/design/` com uma conta superusuária ou com uma conta de equipe que
 
 As configurações visuais, o logotipo e o ícone são persistidos no banco de dados, então esses recursos sobrevivem a reinicializações e deploys sem depender de um serviço externo de arquivos. Outros documentos enviados pelo painel continuam usando `MEDIA_ROOT`; em produção, configure esse diretório em armazenamento persistente antes de publicar editais, provas ou gabaritos.
 
+#### Criar o primeiro superusuário sem acesso ao Shell do Render
+
+No Dashboard do Render, abra **Environment** do serviço web e configure `BOOTSTRAP_SUPERUSER_USERNAME`, `BOOTSTRAP_SUPERUSER_EMAIL` e `BOOTSTRAP_SUPERUSER_PASSWORD` com valores próprios e uma senha forte. Salve e faça um deploy. O `start.sh` cria essa conta somente se ainda não existir nenhum superusuário; se já houver um, não altera nenhuma conta. Depois que o deploy terminar, remova as três variáveis do serviço. Não coloque esses valores no repositório.
+
 ## Executar localmente
 
 Requer Python 3.12 ou mais recente.
@@ -91,7 +95,7 @@ O repositório já contém um Blueprint em `render.yaml`, um script de build em 
 3. Revise os recursos do Blueprint. Ele cria o serviço web e o PostgreSQL; confirme os planos e custos exibidos no Render.
 4. Clique em **Apply**. O Render instala `requirements.txt`, coleta os arquivos estáticos, aplica as migrações, carrega dados demonstrativos e inicia o Gunicorn.
 5. Acompanhe **Events** e **Logs** do serviço. Quando o deploy terminar, abra o endereço `.onrender.com` mostrado no Dashboard.
-6. Para administrar conteúdo, abra o **Shell** do serviço e execute `python manage.py createsuperuser`. Acesse `/admin/` no domínio do site.
+6. Para administrar conteúdo, crie um superusuário pelo **Shell** (`python manage.py createsuperuser`) ou use o bootstrap de variáveis descrito em **Editor visual**. Acesse `/admin/` no domínio do site.
 7. Cadastre processos e fontes oficiais para as instituições desejadas. Os 14 processos iniciais são demonstrativos, sem prazos ou links oficiais.
 
 O Blueprint gera `SECRET_KEY`, define `DJANGO_DEBUG=false`, conecta `DATABASE_URL` ao PostgreSQL e define os hosts e origens CSRF para `.onrender.com`. Se usar domínio próprio, acrescente o domínio a `ALLOWED_HOSTS` e `CSRF_TRUSTED_ORIGINS` nas variáveis do serviço.
