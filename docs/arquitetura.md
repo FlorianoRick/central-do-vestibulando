@@ -34,7 +34,7 @@ O projeto usa o usuário padrão do Django e seu sistema de hash de senhas. O pe
 
 ## Dados confiáveis
 
-O comando `python manage.py seed_demo_data` inclui processos demonstrativos somente para FATEC e UNESP, além das matérias para estudo. Não cria datas, taxas, vagas, documentos, links oficiais ou notícias de instituições. A migração `0003_keep_fatec_and_unesp` remove instituições fora dessas duas e seus processos e notícias vinculadas em bancos já preenchidos. A interface diferencia exemplos e informações pendentes. Só dados confirmados aparecem como oficiais e só eventos oficiais são exportados no calendário ICS.
+O comando `python manage.py seed_demo_data` inclui os 14 processos demonstrativos originais, além das matérias para estudo. Não cria datas, taxas, vagas, documentos ou links oficiais. A migração `0004_restore_demo_catalog` repõe esses cadastros demonstrativos em bancos que já haviam passado pela limpeza anterior; não altera registros existentes com os mesmos identificadores. A interface diferencia exemplos e informações pendentes. Só dados confirmados aparecem como oficiais e só eventos oficiais são exportados no calendário ICS.
 
 Não há coleta automática de páginas. A fila de revisão administrativa permite avaliar possíveis alterações antes de atualizar um registro.
 

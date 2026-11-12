@@ -1,12 +1,28 @@
 from datetime import datetime, timedelta
+from io import StringIO
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.admissions.models import CalendarEvent, EntranceExam, Institution
 from apps.news.models import NewsArticle
 from apps.studies.models import StudyMaterial, StudySubject
+
+
+class DemoCatalogTests(TestCase):
+    def test_original_demo_institutions_and_processes_are_available(self):
+        call_command("seed_demo_data", stdout=StringIO())
+
+        expected_slugs = {
+            "inep", "usp", "unicamp", "unesp", "fatec", "unifesp", "ufrgs",
+            "ufpr", "uerj", "unb", "ifsp", "sisu", "prouni", "fies",
+        }
+        institutions = Institution.objects.filter(slug__in=expected_slugs)
+        self.assertSetEqual(set(institutions.values_list("slug", flat=True)), expected_slugs)
+        self.assertEqual(institutions.filter(is_demo=True).count(), len(expected_slugs))
+        self.assertEqual(EntranceExam.objects.filter(is_demo=True).count(), len(expected_slugs))
 
 
 class PublicPageTests(TestCase):

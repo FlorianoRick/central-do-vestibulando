@@ -16,7 +16,7 @@ Plataforma Django em português para organizar processos seletivos, prazos ofici
 - Editor visual administrativo para cores, tipografia, componentes, layout da página inicial, logotipo e ícone.
 - Configuração local com SQLite e produção com PostgreSQL, Gunicorn e WhiteNoise.
 
-O comando `seed_demo_data` cria cadastros demonstrativos somente para FATEC e UNESP, além de guias de estudo. Esses registros não contêm prazos ou links oficiais e aparecem marcados como demonstrativos. Cadastros só podem ser confirmados no painel com uma fonte oficial; datas não são inventadas.
+O comando `seed_demo_data` cria 14 processos demonstrativos, incluindo ENEM, USP, UNICAMP, UNESP e FATEC, além de guias de estudo. Esses registros não contêm prazos ou links oficiais e aparecem marcados como demonstrativos. Cadastros só podem ser confirmados no painel com uma fonte oficial; datas não são inventadas.
 
 ## Estrutura
 
@@ -92,7 +92,7 @@ O repositório já contém um Blueprint em `render.yaml`, um script de build em 
 4. Clique em **Apply**. O Render instala `requirements.txt`, coleta os arquivos estáticos, aplica as migrações, carrega dados demonstrativos e inicia o Gunicorn.
 5. Acompanhe **Events** e **Logs** do serviço. Quando o deploy terminar, abra o endereço `.onrender.com` mostrado no Dashboard.
 6. Para administrar conteúdo, abra o **Shell** do serviço e execute `python manage.py createsuperuser`. Acesse `/admin/` no domínio do site.
-7. Cadastre processos e fontes oficiais para FATEC e UNESP. Os dois processos iniciais são demonstrativos, sem prazos ou links oficiais.
+7. Cadastre processos e fontes oficiais para as instituições desejadas. Os 14 processos iniciais são demonstrativos, sem prazos ou links oficiais.
 
 O Blueprint gera `SECRET_KEY`, define `DJANGO_DEBUG=false`, conecta `DATABASE_URL` ao PostgreSQL e define os hosts e origens CSRF para `.onrender.com`. Se usar domínio próprio, acrescente o domínio a `ALLOWED_HOSTS` e `CSRF_TRUSTED_ORIGINS` nas variáveis do serviço.
 

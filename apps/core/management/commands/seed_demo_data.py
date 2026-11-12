@@ -24,8 +24,20 @@ SUBJECTS = {
 
 
 EXAMS = [
+    ("INEP", "Instituto Nacional de Estudos e Pesquisas Educacionais", "inep", "federal", "ENEM", "enem"),
+    ("USP", "Universidade de São Paulo", "usp", "estadual", "FUVEST — USP", "vestibular"),
+    ("UNICAMP", "Universidade Estadual de Campinas", "unicamp", "estadual", "Comvest — UNICAMP", "vestibular"),
     ("UNESP", "Universidade Estadual Paulista", "unesp", "estadual", "Vestibular UNESP", "vestibular"),
     ("FATEC", "Faculdades de Tecnologia do Estado de São Paulo", "fatec", "estadual", "Vestibular FATEC", "vestibular"),
+    ("UNIFESP", "Universidade Federal de São Paulo", "unifesp", "federal", "Ingresso — UNIFESP", "vestibular"),
+    ("UFRGS", "Universidade Federal do Rio Grande do Sul", "ufrgs", "federal", "Vestibular UFRGS", "vestibular"),
+    ("UFPR", "Universidade Federal do Paraná", "ufpr", "federal", "Vestibular UFPR", "vestibular"),
+    ("UERJ", "Universidade do Estado do Rio de Janeiro", "uerj", "estadual", "Vestibular UERJ", "vestibular"),
+    ("UnB", "Universidade de Brasília", "unb", "federal", "Ingresso — UnB", "vestibular"),
+    ("IFSP", "Instituto Federal de São Paulo", "ifsp", "instituto", "Processo seletivo — IFSP", "vestibular"),
+    ("SISU", "Sistema de Seleção Unificada", "sisu", "nacional", "SISU", "sisu"),
+    ("ProUni", "Programa Universidade para Todos", "prouni", "nacional", "ProUni", "prouni"),
+    ("FIES", "Fundo de Financiamento Estudantil", "fies", "nacional", "FIES", "fies"),
 ]
 
 
@@ -60,7 +72,6 @@ class Command(BaseCommand):
             )
             subjects[name] = subject
 
-        exam_count = 0
         for acronym, name, slug, institution_type, exam_name, process_type in EXAMS:
             institution, _ = Institution.objects.get_or_create(
                 slug=slug,
@@ -72,7 +83,7 @@ class Command(BaseCommand):
                     "is_demo": True,
                 },
             )
-            _, created = EntranceExam.objects.get_or_create(
+            EntranceExam.objects.get_or_create(
                 slug=f"{slugify(exam_name)}-{slug}",
                 defaults={
                     "name": exam_name,
@@ -83,7 +94,6 @@ class Command(BaseCommand):
                     "is_demo": True,
                 },
             )
-            exam_count += int(created)
 
         material_count = 0
         for subject_name, tip in SUBJECTS.items():
@@ -116,5 +126,5 @@ class Command(BaseCommand):
             article_count += int(created)
 
         self.stdout.write(self.style.SUCCESS(
-            f"Dados demonstrativos disponíveis: {exam_count} processos, {len(subjects)} matérias, {material_count} materiais e {article_count} guias novos."
+            f"Dados demonstrativos disponíveis: {EntranceExam.objects.filter(is_demo=True).count()} processos, {len(subjects)} matérias, {material_count} materiais e {article_count} guias novos."
         ))
