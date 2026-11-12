@@ -16,14 +16,10 @@ ENVIRONMENT_VARIABLES = (
 
 
 class Command(BaseCommand):
-    help = "Cria o primeiro superusuário a partir de variáveis de ambiente, se necessário."
+    help = "Cria um superusuário configurado por variáveis de ambiente, se necessário."
 
     def handle(self, *args, **options):
         User = get_user_model()
-        if User.objects.filter(is_superuser=True).exists():
-            self.stdout.write("Já existe um superusuário; nenhuma conta foi alterada.")
-            return
-
         values = {name: os.environ.get(name, "") for name in ENVIRONMENT_VARIABLES}
         if not any(values.values()):
             self.stdout.write("Bootstrap não configurado; nenhum superusuário foi criado.")
@@ -45,7 +41,11 @@ class Command(BaseCommand):
             raise CommandError("Informe um endereço de e-mail válido para o superusuário.") from None
         if len(username) > User._meta.get_field("username").max_length:
             raise CommandError("O nome de usuário é maior que o limite permitido.")
-        if User.objects.filter(username__iexact=username).exists():
+        existing_user = User.objects.filter(username__iexact=username).first()
+        if existing_user and existing_user.is_superuser:
+            self.stdout.write("A conta de bootstrap já existe; nenhuma conta foi alterada.")
+            return
+        if existing_user:
             raise CommandError("Esse nome de usuário já existe. Escolha outro para o superusuário inicial.")
         if User.objects.filter(email__iexact=email).exists():
             raise CommandError("Esse e-mail já pertence a uma conta. Escolha outro para o superusuário inicial.")
@@ -58,18 +58,16 @@ class Command(BaseCommand):
 
         try:
             with transaction.atomic():
-                if User.objects.filter(is_superuser=True).exists():
-                    self.stdout.write("Já existe um superusuário; nenhuma conta foi alterada.")
-                    return
                 User._default_manager.create_superuser(
                     username=username,
                     email=email,
                     password=password,
                 )
         except IntegrityError:
-            if User.objects.filter(is_superuser=True).exists():
-                self.stdout.write("Já existe um superusuário; nenhuma conta foi alterada.")
+            existing_user = User.objects.filter(username__iexact=username).first()
+            if existing_user and existing_user.is_superuser:
+                self.stdout.write("A conta de bootstrap já existe; nenhuma conta foi alterada.")
                 return
             raise CommandError("Não foi possível criar o superusuário. Verifique o usuário e o e-mail.") from None
 
-        self.stdout.write(self.style.SUCCESS(f"Superusuário inicial {username!r} criado."))
+        self.stdout.write(self.style.SUCCESS(f"Superusuário {username!r} criado."))

@@ -59,7 +59,7 @@ class BootstrapSuperuserTests(TestCase):
 
         self.assertFalse(get_user_model().objects.filter(is_superuser=True).exists())
 
-    def test_existing_superuser_is_never_changed_by_bootstrap(self):
+    def test_bootstrap_adds_admin_without_changing_existing_superuser(self):
         user_model = get_user_model()
         existing_user = user_model.objects.create_superuser(
             username="existing-admin",
@@ -71,7 +71,10 @@ class BootstrapSuperuserTests(TestCase):
 
         existing_user.refresh_from_db()
         self.assertTrue(existing_user.check_password("Different-Password-749!"))
-        self.assertFalse(user_model.objects.filter(username="first-admin").exists())
+        new_user = user_model.objects.get(username="first-admin")
+        self.assertTrue(new_user.is_superuser)
+        self.assertTrue(new_user.check_password(self.bootstrap_environment["BOOTSTRAP_SUPERUSER_PASSWORD"]))
+        self.assertEqual(user_model.objects.filter(is_superuser=True).count(), 2)
 
 
 class SiteAppearanceTests(TestCase):

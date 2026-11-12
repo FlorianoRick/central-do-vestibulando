@@ -56,9 +56,9 @@ Abra `/admin/design/` com uma conta superusuária ou com uma conta de equipe que
 
 As configurações visuais, o logotipo e o ícone são persistidos no banco de dados, então esses recursos sobrevivem a reinicializações e deploys sem depender de um serviço externo de arquivos. Outros documentos enviados pelo painel continuam usando `MEDIA_ROOT`; em produção, configure esse diretório em armazenamento persistente antes de publicar editais, provas ou gabaritos.
 
-#### Criar o primeiro superusuário sem acesso ao Shell do Render
+#### Criar um superusuário sem acesso ao Shell do Render
 
-No Dashboard do Render, abra **Environment** do serviço web e configure `BOOTSTRAP_SUPERUSER_USERNAME`, `BOOTSTRAP_SUPERUSER_EMAIL` e `BOOTSTRAP_SUPERUSER_PASSWORD` com valores próprios e uma senha forte. Salve e faça um deploy. O `start.sh` cria essa conta somente se ainda não existir nenhum superusuário; se já houver um, não altera nenhuma conta. Depois que o deploy terminar, remova as três variáveis do serviço. Não coloque esses valores no repositório.
+No Dashboard do Render, abra **Environment** do serviço web e configure `BOOTSTRAP_SUPERUSER_USERNAME`, `BOOTSTRAP_SUPERUSER_EMAIL` e `BOOTSTRAP_SUPERUSER_PASSWORD` com valores próprios e uma senha forte. Use um nome de usuário e um e-mail exclusivos: o `start.sh` cria essa conta mesmo que já exista outro superusuário e nunca altera as contas existentes. Se o nome configurado já pertencer a um superusuário, o comando não redefine a senha. Salve e faça um deploy; depois que terminar, remova as três variáveis do serviço. Não coloque esses valores no repositório.
 
 ## Executar localmente
 
