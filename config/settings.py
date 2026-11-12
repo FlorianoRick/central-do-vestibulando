@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "apps.admissions.apps.AdmissionsConfig",
     "apps.studies.apps.StudiesConfig",
     "apps.news.apps.NewsConfig",
+    "apps.appearance.apps.AppearanceConfig",
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.appearance.context_processors.site_appearance",
             ],
         },
     },
@@ -96,8 +98,8 @@ STORAGES = {
         )
     },
 }
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
+MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", str(BASE_DIR / "media")))
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "accounts:login"

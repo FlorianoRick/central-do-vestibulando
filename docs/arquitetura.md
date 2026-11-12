@@ -18,12 +18,15 @@ Reunir processos seletivos, prazos oficiais, provas anteriores, materiais de est
 - `apps.admissions`: instituições, cursos, processos seletivos, calendário, documentos, provas e histórico de alterações.
 - `apps.studies`: matérias, materiais, planos, sessões, simulados e comparação de programas.
 - `apps.news`: notícias e avisos com fonte e marcação de conteúdo demonstrativo.
+- `apps.appearance`: aparência global, editor visual restrito à equipe e histórico de alterações.
 
 ## Relações centrais
 
 Uma instituição possui vários processos seletivos. Cada processo pode relacionar cursos, matérias, documentos, prazos e provas. Um plano de estudos pertence a um usuário e relaciona vestibulares, matérias e sessões. Favoritos, preferências, avisos e resultados pertencem ao usuário autenticado.
 
 O Django Admin é a ferramenta principal de gestão. Alterações em processos seletivos registram os campos modificados, o responsável e o horário. Um processo só pode receber situação confirmada quando não for demonstrativo e tiver uma fonte oficial cadastrada.
+
+O editor visual fica em `/admin/design/`. Uma única linha `SiteAppearance` guarda opções validadas; um histórico registra as configurações anterior e nova e o usuário que publicou. O template base converte esses valores em variáveis CSS. Logotipo e ícone são armazenados por uma classe Django Storage no próprio banco, enquanto a prévia usa valores não salvos apenas no navegador. Somente o envio do formulário altera a aparência pública. Acesso exige superusuário ou equipe com a permissão `appearance.change_siteappearance`.
 
 ## Autenticação e privacidade
 
@@ -40,3 +43,5 @@ Não há coleta automática de páginas. A fila de revisão administrativa permi
 Arquivos carregados usam o armazenamento do Django. O armazenamento local é apropriado para desenvolvimento; antes de publicar documentos em uma instância Render efêmera, configure armazenamento persistente compatível com S3. Credenciais são fornecidas por variáveis de ambiente e não ficam no repositório.
 
 `render.yaml` define o serviço Django e PostgreSQL. `build.sh` instala dependências e coleta os arquivos estáticos. O comando de inicialização aplica migrações, carrega dados demonstrativos idempotentes e executa Gunicorn.
+
+O editor aceita logotipos PNG, JPEG ou WebP de até 2 MB e ícones PNG ou ICO de até 512 KB. As imagens são verificadas por tipo, conteúdo e resolução antes de serem persistidas no banco. Os demais arquivos enviados ao site continuam em `MEDIA_ROOT`; em produção, aponte esse diretório para armazenamento persistente.

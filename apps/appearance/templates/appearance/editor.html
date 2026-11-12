@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Personalização do site — Central do Vestibulando{% endblock %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/appearance-editor.css' %}">
+  <script src="{% static 'js/appearance-editor.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+<section class="page-shell page-section appearance-page">
+  <a class="back-link" href="{% url 'admin:index' %}">← Painel administrativo</a>
+  <div class="page-heading appearance-heading">
+    <div><p class="eyebrow">Aparência da plataforma</p><h1>Personalização do site</h1><p>Personalize cores, tipografia, componentes e a apresentação das páginas sem editar código.</p></div>
+    <a class="button button-outline" href="{% url 'core:home' %}" target="_blank" rel="noopener">Ver site</a>
+  </div>
+
+  <nav class="appearance-section-nav surface-card" aria-label="Seções de personalização">
+    <a href="#appearance-colors">Cores</a><a href="#appearance-type">Tipografia</a><a href="#appearance-components">Componentes</a><a href="#appearance-layout">Layout</a><a href="#appearance-branding">Logotipo</a><a href="#appearance-history">Histórico</a>
+  </nav>
+
+  <div class="appearance-editor-grid">
+    <div class="appearance-controls-column">
+      <div class="appearance-status-row">
+        <span class="status {% if form.is_bound %}status-required{% else %}status-confirmed{% endif %}">{% if form.is_bound %}Alterações não salvas{% else %}Aparência publicada{% endif %}</span>
+        <span class="muted">Última alteração: {% if appearance.updated_at %}{{ appearance.updated_at|date:"d/m/Y H:i" }}{% else %}padrão do projeto{% endif %}</span>
+      </div>
+      <div class="notice notice-info" data-unsaved-indicator {% if not form.is_bound %}hidden{% endif %} role="status">Há alterações de prévia que ainda não foram salvas.</div>
+
+      <form method="post" enctype="multipart/form-data" class="appearance-form" data-appearance-form data-dirty="{% if form.is_bound %}true{% else %}false{% endif %}">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="notice notice-warning">{{ form.non_field_errors }}</div>{% endif %}
+
+        <section class="surface-card appearance-section" id="appearance-colors" data-section="colors">
+          <div class="appearance-section-heading"><div><p class="eyebrow">Identidade visual</p><h2>Cores</h2><p>Escolha pelo seletor ou digite um código HEX no campo ao lado.</p></div><button class="link-button" type="button" data-reset-section="colors">Restaurar seção</button></div>
+          <div class="editor-color-grid">
+            {% include "appearance/partials/color_field.html" with field=form.primary_color %}
+            {% include "appearance/partials/color_field.html" with field=form.deep_blue %}
+            {% include "appearance/partials/color_field.html" with field=form.success_green %}
+            {% include "appearance/partials/color_field.html" with field=form.violet %}
+            {% include "appearance/partials/color_field.html" with field=form.background_color %}
+            {% include "appearance/partials/color_field.html" with field=form.surface_color %}
+            {% include "appearance/partials/color_field.html" with field=form.text_color %}
+            {% include "appearance/partials/color_field.html" with field=form.secondary_text_color %}
+            {% include "appearance/partials/color_field.html" with field=form.border_color %}
+            {% include "appearance/partials/color_field.html" with field=form.strong_border_color %}
+            {% include "appearance/partials/color_field.html" with field=form.muted_background_color %}
+            {% include "appearance/partials/color_field.html" with field=form.hover_color %}
+            {% include "appearance/partials/color_field.html" with field=form.link_color %}
+            {% include "appearance/partials/color_field.html" with field=form.soft_blue_color %}
+            {% include "appearance/partials/color_field.html" with field=form.soft_green_color %}
+            {% include "appearance/partials/color_field.html" with field=form.soft_violet_color %}
+            {% include "appearance/partials/color_field.html" with field=form.header_background_color %}
+            {% include "appearance/partials/color_field.html" with field=form.active_navigation_color %}
+            {% include "appearance/partials/color_field.html" with field=form.footer_background_color %}
+            {% include "appearance/partials/color_field.html" with field=form.footer_text_color %}
+            {% include "appearance/partials/color_field.html" with field=form.footer_link_color %}
+            {% include "appearance/partials/color_field.html" with field=form.card_background_color %}
+            {% include "appearance/partials/color_field.html" with field=form.input_background_color %}
+            {% include "appearance/partials/color_field.html" with field=form.input_border_color %}
+            {% include "appearance/partials/color_field.html" with field=form.focus_color %}
+          </div>
+        </section>
+
+        <section class="surface-card appearance-section" id="appearance-type" data-section="typography">
+          <div class="appearance-section-heading"><div><p class="eyebrow">Leitura</p><h2>Tipografia</h2><p>As opções usam fontes locais comuns, sem carregar fontes externas.</p></div><button class="link-button" type="button" data-reset-section="typography">Restaurar seção</button></div>
+          <div class="editor-field-grid">
+            {% include "appearance/partials/field.html" with field=form.font_family %}
+            {% include "appearance/partials/field.html" with field=form.heading_font_family %}
+            {% include "appearance/partials/field.html" with field=form.base_font_size %}
+            {% include "appearance/partials/field.html" with field=form.h1_font_size %}
+            {% include "appearance/partials/field.html" with field=form.h2_font_size %}
+            {% include "appearance/partials/field.html" with field=form.h3_font_size %}
+            {% include "appearance/partials/field.html" with field=form.small_font_size %}
+            {% include "appearance/partials/field.html" with field=form.button_font_size %}
+            {% include "appearance/partials/field.html" with field=form.font_weight %}
+            {% include "appearance/partials/field.html" with field=form.heading_font_weight %}
+            {% include "appearance/partials/field.html" with field=form.button_font_weight %}
+            {% include "appearance/partials/field.html" with field=form.line_height %}
+          </div>
+        </section>
+
+        <section class="surface-card appearance-section" id="appearance-components" data-section="components">
+          <div class="appearance-section-heading"><div><p class="eyebrow">Elementos compartilhados</p><h2>Componentes</h2><p>Os ajustes usam os mesmos estilos reutilizados nas páginas.</p></div><button class="link-button" type="button" data-reset-section="components">Restaurar seção</button></div>
+          <h3 class="editor-subheading">Botões e cartões</h3>
+          <div class="editor-field-grid">
+            {% include "appearance/partials/field.html" with field=form.button_border_radius %}
+            {% include "appearance/partials/field.html" with field=form.button_height %}
+            {% include "appearance/partials/field.html" with field=form.button_horizontal_padding %}
+            {% include "appearance/partials/field.html" with field=form.card_border_radius %}
+            {% include "appearance/partials/field.html" with field=form.card_shadow_intensity %}
+            {% include "appearance/partials/field.html" with field=form.card_padding %}
+          </div>
+          {% include "appearance/partials/toggle_field.html" with field=form.card_border_enabled %}
+          <h3 class="editor-subheading">Campos e navegação</h3>
+          <div class="editor-field-grid">
+            {% include "appearance/partials/field.html" with field=form.input_border_radius %}
+            {% include "appearance/partials/field.html" with field=form.input_height %}
+            {% include "appearance/partials/field.html" with field=form.header_height %}
+            {% include "appearance/partials/field.html" with field=form.navigation_spacing %}
+            {% include "appearance/partials/field.html" with field=form.footer_section_spacing %}
+          </div>
+        </section>
+
+        <section class="surface-card appearance-section" id="appearance-layout" data-section="layout">
+          <div class="appearance-section-heading"><div><p class="eyebrow">Página inicial</p><h2>Layout</h2><p>Controle opções definidas sem remover navegação, acesso à conta ou recursos essenciais.</p></div><button class="link-button" type="button" data-reset-section="layout">Restaurar seção</button></div>
+          <div class="editor-field-grid">
+            {% include "appearance/partials/field.html" with field=form.content_width %}
+            {% include "appearance/partials/field.html" with field=form.horizontal_spacing %}
+            {% include "appearance/partials/field.html" with field=form.section_spacing %}
+            {% include "appearance/partials/field.html" with field=form.density %}
+            {% include "appearance/partials/field.html" with field=form.hero_alignment %}
+            {% include "appearance/partials/field.html" with field=form.featured_exam_count %}
+          </div>
+          <div class="toggle-grid">
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_event_panel %}
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_upcoming_exams %}
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_open_exams %}
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_results %}
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_news %}
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_featured_exams %}
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_institutions %}
+          </div>
+          <div class="form-field editor-form-field section-order-field">
+            <label>Ordem das seções iniciais</label>
+            <p class="field-help">Use os botões para mover cada seção. A navegação e as funções da conta continuam disponíveis.</p>
+            {{ form.home_section_order }}
+            {% for error in form.home_section_order.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            <ol class="section-order-list" data-section-order-list>
+              {% for key,label in home_section_choices %}<li data-section-key="{{ key }}"><span>{{ label }}</span><span class="order-actions"><button type="button" data-order-up aria-label="Mover {{ label|lower }} para cima">↑</button><button type="button" data-order-down aria-label="Mover {{ label|lower }} para baixo">↓</button></span></li>{% endfor %}
+            </ol>
+          </div>
+        </section>
+
+        <section class="surface-card appearance-section" id="appearance-branding" data-section="branding">
+          <div class="appearance-section-heading"><div><p class="eyebrow">Marca</p><h2>Logotipo e ícone</h2><p>PNG, JPEG ou WebP até 2 MB para o logotipo; PNG ou ICO até 512 KB para o ícone.</p></div><button class="link-button" type="button" data-reset-section="branding">Restaurar seção</button></div>
+          <div class="editor-field-grid">
+            {% include "appearance/partials/field.html" with field=form.logo_width %}
+            {% include "appearance/partials/field.html" with field=form.logo_height %}
+          </div>
+          <div class="image-field-block">
+            <label for="{{ form.logo.id_for_label }}">{{ form.logo.label }}</label>
+            {{ form.logo }}
+            {% for error in form.logo.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            <p class="field-help">Se não houver imagem, o nome e o símbolo originais do site aparecem no cabeçalho e no rodapé.</p>
+          </div>
+          <div class="image-field-block">
+            <label for="{{ form.favicon.id_for_label }}">{{ form.favicon.label }}</label>
+            {{ form.favicon }}
+            {% for error in form.favicon.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            <img class="favicon-preview" data-favicon-preview {% if appearance.favicon %}src="{% url 'appearance_asset' 'favicon' %}" data-saved-src="{% url 'appearance_asset' 'favicon' %}"{% else %}hidden{% endif %} alt="Prévia do ícone do site">
+          </div>
+        </section>
+
+        <div class="appearance-form-actions">
+          <button class="button" type="submit">Salvar alterações</button>
+          <button class="button button-outline" type="button" data-discard>Descartar alterações</button>
+          <button class="button button-outline" type="button" data-show-preview>Ver prévia</button>
+          <button class="button button-danger" type="submit" name="restore_defaults" value="1" formnovalidate data-confirm-restore>Restaurar aparência original</button>
+        </div>
+      </form>
+
+      <section class="surface-card appearance-history" id="appearance-history">
+        <div class="appearance-section-heading"><div><p class="eyebrow">Registro de alterações</p><h2>Histórico recente</h2></div></div>
+        {% if history %}<ul>{% for item in history %}<li><span><strong>{% if item.changed_by %}{{ item.changed_by.get_username }}{% else %}Administrador{% endif %}</strong><small>{{ item.created_at|date:"d/m/Y H:i" }}</small></span><span>Configuração visual atualizada</span></li>{% endfor %}</ul>{% else %}<p class="muted">As alterações salvas aparecerão aqui.</p>{% endif %}
+      </section>
+    </div>
+
+    <aside class="appearance-preview-column" id="appearance-preview-panel">
+      <div class="appearance-preview-heading"><div><p class="eyebrow">Prévia em tempo real</p><h2>Visualização</h2></div><span class="tag tag-violet" data-preview-state>{% if form.is_bound %}Alterações não salvas{% else %}Aparência publicada{% endif %}</span></div>
+      <div class="appearance-preview-frame" data-appearance-preview style="{% for name,value in appearance.css_variables.items %}--{{ name }}: {{ value }};{% endfor %}">
+        <header class="preview-site-header">
+          <a class="preview-brand" href="#appearance-preview-panel" aria-label="Prévia da marca">
+            <img class="preview-logo" data-preview-logo {% if appearance.logo %}src="{% url 'appearance_asset' 'logo' %}" data-saved-src="{% url 'appearance_asset' 'logo' %}"{% else %}hidden{% endif %} alt="Logotipo da Central do Vestibulando" style="width:var(--logo-width);height:var(--logo-height)">
+            <span class="preview-brand-mark" data-preview-mark {% if appearance.logo %}hidden{% endif %}>CV</span>
+            <span class="preview-brand-fallback" data-preview-brand-fallback {% if appearance.logo %}hidden{% endif %}>Central do <strong>Vestibulando</strong></span>
+          </a>
+          <nav aria-label="Navegação de exemplo"><a class="is-current" href="#appearance-preview-panel">Início</a><a href="#appearance-preview-panel">Vestibulares</a><a href="#appearance-preview-panel">Materiais</a></nav>
+        </header>
+        <div class="preview-content">
+          <p class="eyebrow">Prévia da plataforma</p><h1>Prepare seu próximo passo</h1><p>Confira como títulos, textos e controles ficam com as configurações escolhidas.</p>
+          <div class="preview-action-row"><button class="button" type="button">Ação principal</button><button class="button button-outline" type="button">Ação secundária</button></div>
+          <article class="surface-card preview-card"><span class="status status-confirmed">Informação confirmada</span><h2>Vestibular demonstrativo</h2><p>O conteúdo oficial só aparece após verificação da fonte.</p><label for="preview-input">Campo de exemplo</label><input id="preview-input" type="text" value="Preparação para a prova" readonly></article>
+        </div>
+        <footer class="preview-site-footer"><strong>Central do Vestibulando</strong><span>Links e informações da plataforma</span></footer>
+      </div>
+      <p class="preview-note">As alterações desta prévia só ficam públicas depois de salvar.</p>
+      <div class="surface-card editor-usage-hint"><strong>Como publicar</strong><p>Ajuste os controles, confira a prévia e selecione <em>Salvar alterações</em>. Use <em>Descartar alterações</em> para voltar aos últimos valores salvos.</p></div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

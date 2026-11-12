@@ -1,0 +1,9 @@
+<div class="form-field editor-form-field color-field">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  <div class="color-control-row">
+    <input class="color-picker" type="color" value="{{ field.value|default:'#2457C5' }}" data-color-picker="{{ field.id_for_label }}" aria-label="Selecionar {{ field.label|lower }}">
+    {{ field }}
+    <button class="color-reset" type="button" data-reset-field="{{ field.html_name }}" aria-label="Restaurar {{ field.label|lower }} ao padrão">Padrão</button>
+  </div>
+  {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+</div>

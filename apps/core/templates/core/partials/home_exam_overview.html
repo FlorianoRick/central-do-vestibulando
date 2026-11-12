@@ -1,0 +1,17 @@
+{% if appearance.show_home_upcoming_exams or appearance.show_home_open_exams %}
+<section class="page-shell home-sections">
+  <div class="section-heading"><div><p class="eyebrow">Tudo em um só lugar</p><h2>Informação para sua preparação</h2></div><a class="text-link" href="{% url 'admissions:list' %}">Explorar vestibulares <span aria-hidden="true">→</span></a></div>
+  <div class="home-columns">
+    {% if appearance.show_home_upcoming_exams %}<section class="surface-card deadlines-card">
+      <div class="card-heading-row"><div><h3>Próximas provas</h3><p>Datas publicadas em fonte oficial</p></div><span class="icon-pill icon-blue" aria-hidden="true">◷</span></div>
+      {% if upcoming_exams %}<ul class="simple-list">{% for exam in upcoming_exams %}<li><a href="{% url 'admissions:detail' exam.slug %}"><strong>{{ exam.name }}</strong><span>{{ exam.institution.acronym|default:exam.institution.name }} · {{ exam.exam_at|date:"d/m/Y" }}</span></a></li>{% endfor %}</ul>
+      {% else %}<div class="empty-state compact"><p>Não há provas com data oficial confirmada cadastradas no momento.</p><a href="{% url 'admissions:list' %}">Consulte o catálogo</a></div>{% endif %}
+    </section>{% endif %}
+    {% if appearance.show_home_open_exams %}<section class="surface-card open-card">
+      <div class="card-heading-row"><div><h3>Inscrições abertas</h3><p>Com prazo confirmado pela instituição</p></div><span class="icon-pill icon-green" aria-hidden="true">✓</span></div>
+      {% if open_exams %}<ul class="simple-list">{% for exam in open_exams %}<li><a href="{% url 'admissions:detail' exam.slug %}"><strong>{{ exam.name }}</strong><span>{{ exam.institution.acronym|default:exam.institution.name }} · até {{ exam.registration_closes_at|date:"d/m/Y" }}</span></a></li>{% endfor %}</ul>
+      {% else %}<div class="empty-state compact"><p>Nenhuma inscrição aberta com confirmação oficial cadastrada.</p><a href="{% url 'admissions:list' %}?status=open">Ver inscrições abertas</a></div>{% endif %}
+    </section>{% endif %}
+  </div>
+</section>
+{% endif %}

@@ -13,6 +13,7 @@ Plataforma Django em português para organizar processos seletivos, prazos ofici
 - Favoritos de vestibulares, materiais salvos, avisos internos, planos de estudo, sessões editáveis e resultados de simulados.
 - Sugestões de sessões para sete dias, com prioridade para matérias compartilhadas quando o programa foi verificado.
 - Painel Django Admin para conteúdo, fontes, documentos, revisões e histórico de alteração dos processos seletivos.
+- Editor visual administrativo para cores, tipografia, componentes, layout da página inicial, logotipo e ícone.
 - Configuração local com SQLite e produção com PostgreSQL, Gunicorn e WhiteNoise.
 
 O comando `seed_demo_data` cria cadastros demonstrativos somente para FATEC e UNESP, além de guias de estudo. Esses registros não contêm prazos ou links oficiais e aparecem marcados como demonstrativos. Cadastros só podem ser confirmados no painel com uma fonte oficial; datas não são inventadas.
@@ -26,6 +27,7 @@ apps/accounts/             Perfil, autenticação, favoritos, preferências e av
 apps/admissions/           Instituições, processos, documentos, calendário e provas
 apps/studies/              Matérias, materiais, comparação e planejamento
 apps/news/                 Notícias e comunicados
+apps/appearance/           Personalização visual e histórico de alterações
 templates/                 Template base e componentes compartilhados
 static/                    CSS e JavaScript próprios
 docs/references/           Prompt de projeto e wireframe usados como referência
@@ -47,6 +49,12 @@ As migrações de cada aplicativo ficam em `apps/*/migrations/`. O banco local �
 O cadastro usa `django.contrib.auth`, validadores de senha do Django e hash seguro. O login aceita nome de usuário ou e-mail. As páginas privadas filtram os dados pelo usuário autenticado. A recuperação de senha usa os formulários e tokens do Django; localmente o e-mail é escrito no console. Para enviar mensagens em produção, configure as variáveis SMTP indicadas em `.env.example`.
 
 Crie uma conta administrativa com `python manage.py createsuperuser` e entre em `/admin/`. Somente usuários autorizados pelo Django podem administrar conteúdo. Ao confirmar um processo seletivo, o painel exige uma fonte oficial e registra quem verificou e quando.
+
+### Editor visual
+
+Abra `/admin/design/` com uma conta superusuária ou com uma conta de equipe que tenha a permissão `appearance.change_siteappearance`. O link **Aparência** também aparece no cabeçalho para essas contas. As alterações ficam em rascunho na prévia até você selecionar **Salvar alterações**; **Descartar alterações** recupera a última configuração salva. A restauração geral pede confirmação e registra a alteração no histórico.
+
+As configurações visuais, o logotipo e o ícone são persistidos no banco de dados, então esses recursos sobrevivem a reinicializações e deploys sem depender de um serviço externo de arquivos. Outros documentos enviados pelo painel continuam usando `MEDIA_ROOT`; em produção, configure esse diretório em armazenamento persistente antes de publicar editais, provas ou gabaritos.
 
 ## Executar localmente
 

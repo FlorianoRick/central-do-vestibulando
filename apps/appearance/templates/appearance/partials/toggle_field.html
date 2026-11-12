@@ -1,0 +1,4 @@
+<div class="toggle-field">
+  <label for="{{ field.id_for_label }}">{{ field }}<span>{{ field.label }}</span></label>
+  {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+</div>

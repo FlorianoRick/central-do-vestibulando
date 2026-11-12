@@ -1,0 +1,6 @@
+{% if appearance.show_home_institutions %}
+<section class="page-shell institution-strip">
+  <div><p class="eyebrow">Instituições</p><h2>Um catálogo que pode crescer</h2><p>Novas instituições e processos podem ser adicionados pelo painel administrativo.</p></div>
+  <div class="institution-tags">{% for institution in institutions %}<span>{{ institution.acronym|default:institution.name }}</span>{% empty %}<span>Instituições ainda não cadastradas</span>{% endfor %}</div>
+</section>
+{% endif %}
