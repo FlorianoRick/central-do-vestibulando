@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Gestão interna — Vestibulando{% endblock %}
+{% block content %}
+<section class="page-shell page-section">
+  <div class="page-heading">
+    <div><p class="eyebrow">Área restrita</p><h1>Gestão interna</h1><p>Gerencie conteúdo e revise as informações antes de publicá-las.</p></div>
+    <a class="button button-outline" href="{% url 'core:home' %}">Ver site</a>
+  </div>
+  {% if pending_news %}<div class="notice notice-warning">{{ pending_news }} notícia(s) publicada(s) aguardam verificação. Revise antes de manter a publicação.</div>{% endif %}
+  <div class="card-grid card-grid-two">
+    {% for item in content_links %}
+    <a class="surface-card admin-link-card" href="{{ item.url }}">
+      <span class="eyebrow">Conteúdo</span><h2>{{ item.label }}</h2>
+      {% if item.show_count %}<p>{{ item.count }} registro(s){% if item.secondary_count %} · {{ item.secondary_count }} recurso(s) publicado(s){% endif %}</p>{% endif %}
+      <span class="text-link">Gerenciar ↗</span>
+    </a>
+    {% endfor %}
+    {% if can_manage_users %}
+    <a class="surface-card admin-link-card" href="{% url 'administration:user_roles' %}">
+      <span class="eyebrow">Acesso</span><h2>Usuários e permissões</h2><p>Gerencie o acesso administrativo sem alterar senhas ou dados pessoais.</p><span class="text-link">Gerenciar ↗</span>
+    </a>
+    {% endif %}
+    <a class="surface-card admin-link-card" href="{% url 'admin:index' %}">
+      <span class="eyebrow">Ferramentas</span><h2>Administração Django</h2><p>Acesse outros recursos internos e o histórico de alterações.</p><span class="text-link">Abrir administração ↗</span>
+    </a>
+  </div>
+</section>
+{% endblock %}

@@ -1,13 +1,22 @@
 from django.contrib import admin
 
-from .models import MockExamResult, StudyMaterial, StudyPlan, StudySession, StudySubject
+from .models import MockExamResult, StudyMaterial, StudyPlan, StudyResource, StudySession, StudySubject
 
 
 @admin.register(StudySubject)
 class StudySubjectAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
+    list_display = ("name", "slug", "is_active")
+    list_filter = ("is_active",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
+
+
+@admin.register(StudyResource)
+class StudyResourceAdmin(admin.ModelAdmin):
+    list_display = ("title", "subject", "source_name", "last_checked_at", "is_published")
+    list_filter = ("subject", "is_published", "source_name")
+    search_fields = ("title", "description", "source_name")
+    autocomplete_fields = ("subject",)
 
 
 @admin.register(StudyMaterial)

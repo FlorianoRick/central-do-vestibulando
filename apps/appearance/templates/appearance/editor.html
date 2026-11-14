@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Personalização do site — Central do Vestibulando{% endblock %}
+{% block title %}Personalização do site — Vestibulando{% endblock %}
 {% block extra_head %}
   <link rel="stylesheet" href="{% static 'css/appearance-editor.css' %}">
   <script src="{% static 'js/appearance-editor.js' %}" defer></script>
@@ -20,9 +20,10 @@
   <div class="appearance-editor-grid">
     <div class="appearance-controls-column">
       <div class="appearance-status-row">
-        <span class="status {% if form.is_bound %}status-required{% else %}status-confirmed{% endif %}">{% if form.is_bound %}Alterações não salvas{% else %}Aparência publicada{% endif %}</span>
+        <span class="status {% if form.is_bound %}status-required{% else %}status-confirmed{% endif %}">{% if form.is_bound %}Alterações não salvas{% elif appearance.draft_saved_at %}Rascunho salvo{% else %}Aparência publicada{% endif %}</span>
         <span class="muted">Última alteração: {% if appearance.updated_at %}{{ appearance.updated_at|date:"d/m/Y H:i" }}{% else %}padrão do projeto{% endif %}</span>
       </div>
+      {% if appearance.draft_saved_at %}<div class="notice notice-info">Há um rascunho salvo em {{ appearance.draft_saved_at|date:"d/m/Y H:i" }}{% if appearance.draft_saved_by %} por {{ appearance.draft_saved_by.get_username }}{% endif %}. Ele só entrará no ar após a publicação.</div>{% endif %}
       <div class="notice notice-info" data-unsaved-indicator {% if not form.is_bound %}hidden{% endif %} role="status">Há alterações de prévia que ainda não foram salvas.</div>
 
       <form method="post" enctype="multipart/form-data" class="appearance-form" data-appearance-form data-dirty="{% if form.is_bound %}true{% else %}false{% endif %}">
@@ -109,6 +110,9 @@
             {% include "appearance/partials/field.html" with field=form.density %}
             {% include "appearance/partials/field.html" with field=form.hero_alignment %}
             {% include "appearance/partials/field.html" with field=form.featured_exam_count %}
+            {% include "appearance/partials/field.html" with field=form.home_title %}
+            {% include "appearance/partials/field.html" with field=form.home_description %}
+            {% include "appearance/partials/field.html" with field=form.footer_description %}
           </div>
           <div class="toggle-grid">
             {% include "appearance/partials/toggle_field.html" with field=form.show_home_event_panel %}
@@ -117,7 +121,7 @@
             {% include "appearance/partials/toggle_field.html" with field=form.show_home_results %}
             {% include "appearance/partials/toggle_field.html" with field=form.show_home_news %}
             {% include "appearance/partials/toggle_field.html" with field=form.show_home_featured_exams %}
-            {% include "appearance/partials/toggle_field.html" with field=form.show_home_institutions %}
+            {% include "appearance/partials/toggle_field.html" with field=form.show_home_materials %}
           </div>
           <div class="form-field editor-form-field section-order-field">
             <label>Ordem das seções iniciais</label>
@@ -151,7 +155,8 @@
         </section>
 
         <div class="appearance-form-actions">
-          <button class="button" type="submit">Salvar alterações</button>
+          <button class="button button-outline" type="submit" name="save_draft" value="1">Salvar rascunho</button>
+          <button class="button" type="submit" name="publish_changes" value="1">Publicar alterações</button>
           <button class="button button-outline" type="button" data-discard>Descartar alterações</button>
           <button class="button button-outline" type="button" data-show-preview>Ver prévia</button>
           <button class="button button-danger" type="submit" name="restore_defaults" value="1" formnovalidate data-confirm-restore>Restaurar aparência original</button>
@@ -169,18 +174,18 @@
       <div class="appearance-preview-frame" data-appearance-preview style="{% for name,value in appearance.css_variables.items %}--{{ name }}: {{ value }};{% endfor %}">
         <header class="preview-site-header">
           <a class="preview-brand" href="#appearance-preview-panel" aria-label="Prévia da marca">
-            <img class="preview-logo" data-preview-logo {% if appearance.logo %}src="{% url 'appearance_asset' 'logo' %}" data-saved-src="{% url 'appearance_asset' 'logo' %}"{% else %}hidden{% endif %} alt="Logotipo da Central do Vestibulando" style="width:var(--logo-width);height:var(--logo-height)">
-            <span class="preview-brand-mark" data-preview-mark {% if appearance.logo %}hidden{% endif %}>CV</span>
-            <span class="preview-brand-fallback" data-preview-brand-fallback {% if appearance.logo %}hidden{% endif %}>Central do <strong>Vestibulando</strong></span>
+            <img class="preview-logo" data-preview-logo {% if appearance.logo %}src="{% url 'appearance_asset' 'logo' %}" data-saved-src="{% url 'appearance_asset' 'logo' %}"{% else %}hidden{% endif %} alt="Logotipo do Vestibulando" style="width:var(--logo-width);height:var(--logo-height)">
+            <span class="preview-brand-mark" data-preview-mark {% if appearance.logo %}hidden{% endif %}>V</span>
+            <span class="preview-brand-fallback" data-preview-brand-fallback {% if appearance.logo %}hidden{% endif %}>Vestibulando</span>
           </a>
           <nav aria-label="Navegação de exemplo"><a class="is-current" href="#appearance-preview-panel">Início</a><a href="#appearance-preview-panel">Vestibulares</a><a href="#appearance-preview-panel">Materiais</a></nav>
         </header>
         <div class="preview-content">
-          <p class="eyebrow">Prévia da plataforma</p><h1>Prepare seu próximo passo</h1><p>Confira como títulos, textos e controles ficam com as configurações escolhidas.</p>
+          <p class="eyebrow">Prévia da plataforma</p><h1 data-preview-home-title>{{ appearance.home_title }}</h1><p data-preview-home-description>{{ appearance.home_description }}</p>
           <div class="preview-action-row"><button class="button" type="button">Ação principal</button><button class="button button-outline" type="button">Ação secundária</button></div>
           <article class="surface-card preview-card"><span class="status status-confirmed">Informação confirmada</span><h2>Vestibular demonstrativo</h2><p>O conteúdo oficial só aparece após verificação da fonte.</p><label for="preview-input">Campo de exemplo</label><input id="preview-input" type="text" value="Preparação para a prova" readonly></article>
         </div>
-        <footer class="preview-site-footer"><strong>Central do Vestibulando</strong><span>Links e informações da plataforma</span></footer>
+        <footer class="preview-site-footer"><strong>Vestibulando</strong><span data-preview-footer-description>{{ appearance.footer_description }}</span></footer>
       </div>
       <p class="preview-note">As alterações desta prévia só ficam públicas depois de salvar.</p>
       <div class="surface-card editor-usage-hint"><strong>Como publicar</strong><p>Ajuste os controles, confira a prévia e selecione <em>Salvar alterações</em>. Use <em>Descartar alterações</em> para voltar aos últimos valores salvos.</p></div>

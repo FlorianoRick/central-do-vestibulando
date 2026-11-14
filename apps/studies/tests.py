@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.admissions.models import EntranceExam, Institution
-from .models import StudyPlan, StudySession, StudySubject
+from .models import StudyPlan, StudyResource, StudySession, StudySubject
 
 User = get_user_model()
 
@@ -66,3 +66,38 @@ class StudyPlannerTests(TestCase):
         self.assertRedirects(response, reverse("studies:planner"))
         plan.refresh_from_db()
         self.assertFalse(plan.is_active)
+
+    def test_public_resource_displays_source_and_verification_date(self):
+        StudyResource.objects.create(
+            subject=self.subject,
+            title="Recurso de História",
+            description="Conteúdo revisado para estudo.",
+            source_name="Fonte de teste",
+            source_url="https://example.com/historia",
+            vestibular_level="Ensino médio",
+            last_checked_at="2026-11-14",
+            is_published=True,
+        )
+
+        response = self.client.get(reverse("studies:list"), {"materia": self.subject.slug})
+
+        self.assertContains(response, "Recurso de História")
+        self.assertContains(response, "https://example.com/historia")
+        self.assertContains(response, "14/11/2026")
+
+    def test_inactive_subject_resources_are_not_public(self):
+        self.subject.is_active = False
+        self.subject.save(update_fields=["is_active"])
+        StudyResource.objects.create(
+            subject=self.subject,
+            title="Recurso fora do catálogo",
+            description="Não deve aparecer.",
+            source_name="Fonte de teste",
+            source_url="https://example.com/oculto",
+            last_checked_at="2026-11-14",
+            is_published=True,
+        )
+
+        response = self.client.get(reverse("studies:list"))
+
+        self.assertNotContains(response, "Recurso fora do catálogo")

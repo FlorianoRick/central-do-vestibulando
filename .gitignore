@@ -14,6 +14,7 @@ env/
 *.sqlite3
 /media/
 /staticfiles/
+/exports/
 *.log
 
 # Secrets and local settings

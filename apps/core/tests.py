@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from io import StringIO
 
 from django.contrib.auth import get_user_model
@@ -6,23 +5,93 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.admissions.models import CalendarEvent, EntranceExam, Institution
+from apps.admissions.models import EntranceExam, Institution
+from apps.appearance.services import get_active_appearance
 from apps.news.models import NewsArticle
-from apps.studies.models import StudyMaterial, StudySubject
+from apps.studies.models import StudyMaterial, StudyResource, StudySubject
 
 
 class DemoCatalogTests(TestCase):
-    def test_original_demo_institutions_and_processes_are_available(self):
+    def test_seed_keeps_only_the_curated_active_institution_catalog(self):
         call_command("seed_demo_data", stdout=StringIO())
 
-        expected_slugs = {
-            "inep", "usp", "unicamp", "unesp", "fatec", "unifesp", "ufrgs",
-            "ufpr", "uerj", "unb", "ifsp", "sisu", "prouni", "fies",
-        }
-        institutions = Institution.objects.filter(slug__in=expected_slugs)
+        expected_slugs = {"fatec", "unesp", "unicamp", "usp", "puc-sp"}
+        institutions = Institution.objects.filter(is_active=True)
         self.assertSetEqual(set(institutions.values_list("slug", flat=True)), expected_slugs)
-        self.assertEqual(institutions.filter(is_demo=True).count(), len(expected_slugs))
-        self.assertEqual(EntranceExam.objects.filter(is_demo=True).count(), len(expected_slugs))
+        self.assertFalse(institutions.filter(is_demo=True).exists())
+        self.assertSetEqual(
+            set(
+                EntranceExam.objects.filter(
+                    is_active=True,
+                    institution__is_active=True,
+                ).values_list("institution__slug", flat=True)
+            ),
+            expected_slugs,
+        )
+        self.assertEqual(
+            set(StudySubject.objects.filter(is_active=True).values_list("name", flat=True)),
+            {
+                "Biologia", "Filosofia", "Física", "Geografia", "História",
+                "Inglês", "Literatura", "Matemática", "Química", "Sociologia",
+                "Língua Portuguesa",
+            },
+        )
+
+
+class StarterContentTests(TestCase):
+    def setUp(self):
+        call_command("seed_demo_data", stdout=StringIO())
+        call_command("seed_vestibulando_content", stdout=StringIO())
+
+    def test_seed_adds_verified_resources_for_all_active_subjects_and_three_news_items(self):
+        self.assertEqual(
+            StudyResource.objects.filter(
+                is_published=True,
+                subject__is_active=True,
+                source_url__gt="",
+                last_checked_at__isnull=False,
+            ).count(),
+            11,
+        )
+        self.assertEqual(
+            NewsArticle.objects.filter(
+                is_published=True,
+                is_demo=False,
+                review_status=NewsArticle.ReviewStatus.VERIFIED,
+                source_checked_at__isnull=False,
+            ).count(),
+            3,
+        )
+
+    def test_seed_is_idempotent(self):
+        call_command("seed_vestibulando_content", stdout=StringIO())
+        self.assertEqual(StudyResource.objects.count(), 11)
+        self.assertEqual(
+            NewsArticle.objects.filter(is_demo=False).count(),
+            3,
+        )
+
+    def test_resource_and_verified_news_appear_in_public_pages(self):
+        home = self.client.get(reverse("core:home"))
+        materials = self.client.get(reverse("studies:list"))
+        news = self.client.get(reverse("news:list"))
+        self.assertContains(home, "Materiais e guias")
+        self.assertContains(materials, "Simple Present")
+        self.assertContains(news, "Unicamp divulga convocados para a segunda fase")
+
+    def test_legacy_home_section_order_still_renders_materials(self):
+        appearance = get_active_appearance()
+        appearance.home_section_order = [
+            "exam_overview",
+            "updates",
+            "featured_exams",
+            "institutions",
+        ]
+        appearance.save(update_fields=["home_section_order"])
+
+        home = self.client.get(reverse("core:home"))
+
+        self.assertContains(home, "Materiais e guias")
 
 
 class PublicPageTests(TestCase):
@@ -64,12 +133,8 @@ class PublicPageTests(TestCase):
             reverse("core:privacy"),
             reverse("core:terms"),
             reverse("admissions:list"),
-            reverse("admissions:institutions"),
             reverse("admissions:detail", args=[self.exam.slug]),
             reverse("admissions:compare"),
-            reverse("admissions:calendar"),
-            reverse("admissions:calendar") + "?modo=mes&data=2026-11",
-            reverse("admissions:calendar") + "?modo=semana&data=2026-11-11",
             reverse("admissions:papers"),
             reverse("admissions:answer_keys"),
             reverse("studies:list"),
@@ -85,24 +150,13 @@ class PublicPageTests(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 200)
 
+    def test_calendar_and_institution_pages_are_not_public_routes(self):
+        self.assertEqual(self.client.get("/vestibulares/calendario/").status_code, 404)
+        self.assertEqual(self.client.get("/vestibulares/instituicoes/").status_code, 404)
+
     def test_private_planner_redirects_to_login(self):
         response = self.client.get(reverse("studies:planner"))
         self.assertRedirects(response, f"{reverse('accounts:login')}?next={reverse('studies:planner')}")
-
-    def test_calendar_month_and_week_visualizations_render(self):
-        from django.utils import timezone
-
-        event = CalendarEvent.objects.create(
-            exam=self.exam,
-            title="Prova demonstrativa",
-            event_type=CalendarEvent.EventType.EXAM,
-            starts_at=timezone.make_aware(datetime(2030, 11, 12, 9, 0)),
-            is_demo=True,
-        )
-        month_response = self.client.get(reverse("admissions:calendar"), {"modo": "mes", "data": "2030-11"})
-        week_response = self.client.get(reverse("admissions:calendar"), {"modo": "semana", "data": "2030-11-12"})
-        self.assertContains(month_response, event.title)
-        self.assertContains(week_response, event.title)
 
     def test_account_and_planner_render_for_student(self):
         user = get_user_model().objects.create_user(username="estudante", password="Preparacao-segura-741!")
@@ -114,21 +168,6 @@ class PublicPageTests(TestCase):
         response = self.client.get(reverse("admissions:detail", args=[self.exam.slug]))
         self.assertContains(response, "Verificação necessária")
         self.assertContains(response, "Não há datas ou links oficiais confirmados", status_code=200)
-
-    def test_calendar_export_excludes_unverified_events(self):
-        from django.utils import timezone
-        from datetime import timedelta
-
-        CalendarEvent.objects.create(
-            exam=self.exam,
-            title="Prazo demonstrativo",
-            starts_at=timezone.now() + timedelta(days=2),
-            is_demo=True,
-        )
-        response = self.client.get(reverse("admissions:calendar_ics"))
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Prazo demonstrativo")
-        self.assertContains(response, "BEGIN:VCALENDAR")
 
     def test_syllabus_comparison_lists_shared_subjects(self):
         second_exam = EntranceExam.objects.create(

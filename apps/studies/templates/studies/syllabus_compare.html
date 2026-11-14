@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load cv_query %}
-{% block title %}Comparar programas de estudo — Central do Vestibulando{% endblock %}
+{% block title %}Comparar programas de estudo — Vestibulando{% endblock %}
 {% block content %}
 <section class="page-shell page-section"><a class="back-link" href="{% url 'studies:list' %}">← Materiais de estudo</a><div class="page-heading"><div><p class="eyebrow">Prepare um estudo mais direcionado</p><h1>Comparar programas</h1><p>Compare as matérias cadastradas para até três vestibulares e identifique conteúdos compartilhados.</p></div></div>
   <form method="get" class="surface-card compare-select-panel"><fieldset class="form-fieldset"><legend>Processos seletivos</legend>{% if form.exams.errors %}<div class="field-error">{{ form.exams.errors }}</div>{% endif %}<div class="exam-choice-grid">{% for checkbox in form.exams %}<label class="choice-card">{{ checkbox.tag }}<span><strong>{{ checkbox.choice_label }}</strong><small>Marque para incluir na comparação</small></span></label>{% empty %}<p class="empty-note">Cadastre vestibulares e matérias de programa no painel administrativo.</p>{% endfor %}</div></fieldset><button class="button" type="submit">Comparar programas</button></form>

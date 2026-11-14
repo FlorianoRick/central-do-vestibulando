@@ -17,7 +17,7 @@ HOME_SECTION_CHOICES = (
     ("exam_overview", "Próximas provas e inscrições abertas"),
     ("updates", "Resultados e comunicados"),
     ("featured_exams", "Processos para conhecer"),
-    ("institutions", "Instituições"),
+    ("materials", "Materiais de estudo"),
 )
 HOME_SECTION_KEYS = tuple(key for key, _label in HOME_SECTION_CHOICES)
 
@@ -78,37 +78,37 @@ class SiteAppearance(models.Model):
         "configuração única", primary_key=True, default=1, editable=False
     )
 
-    primary_color = models.CharField("azul principal", max_length=7, default="#2457C5", validators=[HEX_COLOR_VALIDATOR])
-    deep_blue = models.CharField("azul escuro", max_length=7, default="#172B4D", validators=[HEX_COLOR_VALIDATOR])
-    success_green = models.CharField("verde de confirmação", max_length=7, default="#18794E", validators=[HEX_COLOR_VALIDATOR])
-    violet = models.CharField("violeta", max_length=7, default="#7040B5", validators=[HEX_COLOR_VALIDATOR])
-    background_color = models.CharField("fundo da página", max_length=7, default="#F4F7FB", validators=[HEX_COLOR_VALIDATOR])
-    surface_color = models.CharField("superfícies", max_length=7, default="#FFFFFF", validators=[HEX_COLOR_VALIDATOR])
-    text_color = models.CharField("texto principal", max_length=7, default="#344054", validators=[HEX_COLOR_VALIDATOR])
-    secondary_text_color = models.CharField("texto secundário", max_length=7, default="#667085", validators=[HEX_COLOR_VALIDATOR])
-    border_color = models.CharField("bordas", max_length=7, default="#DCE3ED", validators=[HEX_COLOR_VALIDATOR])
-    strong_border_color = models.CharField("bordas destacadas", max_length=7, default="#C8D2E0", validators=[HEX_COLOR_VALIDATOR])
-    muted_background_color = models.CharField("fundo neutro", max_length=7, default="#EEF1F5", validators=[HEX_COLOR_VALIDATOR])
-    hover_color = models.CharField("cor ao passar o cursor", max_length=7, default="#1C46A1", validators=[HEX_COLOR_VALIDATOR])
-    link_color = models.CharField("links", max_length=7, default="#2457C5", validators=[HEX_COLOR_VALIDATOR])
-    soft_blue_color = models.CharField("fundo azul suave", max_length=7, default="#EDF3FF", validators=[HEX_COLOR_VALIDATOR])
-    soft_green_color = models.CharField("fundo verde suave", max_length=7, default="#E9F5EF", validators=[HEX_COLOR_VALIDATOR])
-    soft_violet_color = models.CharField("fundo violeta suave", max_length=7, default="#F2EDFA", validators=[HEX_COLOR_VALIDATOR])
-    header_background_color = models.CharField("fundo do cabeçalho", max_length=7, default="#FFFFFF", validators=[HEX_COLOR_VALIDATOR])
-    active_navigation_color = models.CharField("navegação ativa", max_length=7, default="#2457C5", validators=[HEX_COLOR_VALIDATOR])
-    footer_background_color = models.CharField("fundo do rodapé", max_length=7, default="#172B4D", validators=[HEX_COLOR_VALIDATOR])
+    primary_color = models.CharField("azul principal", max_length=7, default="#285BCB", validators=[HEX_COLOR_VALIDATOR])
+    deep_blue = models.CharField("texto de alto contraste", max_length=7, default="#DFE8F4", validators=[HEX_COLOR_VALIDATOR])
+    success_green = models.CharField("verde de confirmação", max_length=7, default="#35BB86", validators=[HEX_COLOR_VALIDATOR])
+    violet = models.CharField("violeta", max_length=7, default="#A56BD1", validators=[HEX_COLOR_VALIDATOR])
+    background_color = models.CharField("fundo da página", max_length=7, default="#101722", validators=[HEX_COLOR_VALIDATOR])
+    surface_color = models.CharField("superfícies", max_length=7, default="#1B2838", validators=[HEX_COLOR_VALIDATOR])
+    text_color = models.CharField("texto principal", max_length=7, default="#DCE4EF", validators=[HEX_COLOR_VALIDATOR])
+    secondary_text_color = models.CharField("texto secundário", max_length=7, default="#9AAABC", validators=[HEX_COLOR_VALIDATOR])
+    border_color = models.CharField("bordas", max_length=7, default="#2D3C50", validators=[HEX_COLOR_VALIDATOR])
+    strong_border_color = models.CharField("bordas destacadas", max_length=7, default="#42536A", validators=[HEX_COLOR_VALIDATOR])
+    muted_background_color = models.CharField("fundo neutro", max_length=7, default="#243244", validators=[HEX_COLOR_VALIDATOR])
+    hover_color = models.CharField("cor ao passar o cursor", max_length=7, default="#3472E3", validators=[HEX_COLOR_VALIDATOR])
+    link_color = models.CharField("links", max_length=7, default="#A9C6F6", validators=[HEX_COLOR_VALIDATOR])
+    soft_blue_color = models.CharField("fundo azul suave", max_length=7, default="#22395D", validators=[HEX_COLOR_VALIDATOR])
+    soft_green_color = models.CharField("fundo verde suave", max_length=7, default="#163B31", validators=[HEX_COLOR_VALIDATOR])
+    soft_violet_color = models.CharField("fundo violeta suave", max_length=7, default="#37263F", validators=[HEX_COLOR_VALIDATOR])
+    header_background_color = models.CharField("fundo do cabeçalho", max_length=7, default="#1B2838", validators=[HEX_COLOR_VALIDATOR])
+    active_navigation_color = models.CharField("navegação ativa", max_length=7, default="#9CC0FF", validators=[HEX_COLOR_VALIDATOR])
+    footer_background_color = models.CharField("fundo do rodapé", max_length=7, default="#0E1520", validators=[HEX_COLOR_VALIDATOR])
     footer_text_color = models.CharField("texto do rodapé", max_length=7, default="#D7E1F0", validators=[HEX_COLOR_VALIDATOR])
     footer_link_color = models.CharField("links do rodapé", max_length=7, default="#D7E1F0", validators=[HEX_COLOR_VALIDATOR])
-    card_background_color = models.CharField("fundo dos cartões", max_length=7, default="#FFFFFF", validators=[HEX_COLOR_VALIDATOR])
-    input_background_color = models.CharField("fundo dos campos", max_length=7, default="#FFFFFF", validators=[HEX_COLOR_VALIDATOR])
-    input_border_color = models.CharField("borda dos campos", max_length=7, default="#C8D2E0", validators=[HEX_COLOR_VALIDATOR])
-    focus_color = models.CharField("realce de foco", max_length=7, default="#2457C5", validators=[HEX_COLOR_VALIDATOR])
+    card_background_color = models.CharField("fundo dos cartões", max_length=7, default="#1B2838", validators=[HEX_COLOR_VALIDATOR])
+    input_background_color = models.CharField("fundo dos campos", max_length=7, default="#101722", validators=[HEX_COLOR_VALIDATOR])
+    input_border_color = models.CharField("borda dos campos", max_length=7, default="#36475D", validators=[HEX_COLOR_VALIDATOR])
+    focus_color = models.CharField("realce de foco", max_length=7, default="#65A1FF", validators=[HEX_COLOR_VALIDATOR])
 
     font_family = models.CharField("fonte do texto", max_length=20, choices=FONT_FAMILY_CHOICES, default="system")
     heading_font_family = models.CharField("fonte dos títulos", max_length=20, choices=FONT_FAMILY_CHOICES, default="system")
-    base_font_size = models.PositiveSmallIntegerField("tamanho do texto", default=16, validators=[MinValueValidator(14), MaxValueValidator(20)])
-    h1_font_size = models.PositiveSmallIntegerField("tamanho do título principal", default=52, validators=[MinValueValidator(28), MaxValueValidator(64)])
-    h2_font_size = models.PositiveSmallIntegerField("tamanho dos títulos secundários", default=28, validators=[MinValueValidator(20), MaxValueValidator(44)])
+    base_font_size = models.PositiveSmallIntegerField("tamanho do texto", default=15, validators=[MinValueValidator(14), MaxValueValidator(20)])
+    h1_font_size = models.PositiveSmallIntegerField("tamanho do título principal", default=42, validators=[MinValueValidator(28), MaxValueValidator(64)])
+    h2_font_size = models.PositiveSmallIntegerField("tamanho dos títulos secundários", default=26, validators=[MinValueValidator(20), MaxValueValidator(44)])
     h3_font_size = models.PositiveSmallIntegerField("tamanho dos subtítulos", default=18, validators=[MinValueValidator(16), MaxValueValidator(32)])
     small_font_size = models.PositiveSmallIntegerField("tamanho dos textos pequenos", default=13, validators=[MinValueValidator(11), MaxValueValidator(16)])
     button_font_size = models.PositiveSmallIntegerField("tamanho do texto dos botões", default=15, validators=[MinValueValidator(12), MaxValueValidator(20)])
@@ -117,22 +117,22 @@ class SiteAppearance(models.Model):
     button_font_weight = models.PositiveSmallIntegerField("peso dos botões", default=700, choices=((500, "Médio"), (600, "Seminegrito"), (700, "Negrito"), (800, "Extra negrito")))
     line_height = models.DecimalField("altura da linha", max_digits=3, decimal_places=2, default=Decimal("1.55"), validators=[MinValueValidator(Decimal("1.20")), MaxValueValidator(Decimal("2.00"))])
 
-    button_border_radius = models.PositiveSmallIntegerField("arredondamento dos botões", default=9, validators=[MinValueValidator(0), MaxValueValidator(24)])
-    button_height = models.PositiveSmallIntegerField("altura dos botões", default=44, validators=[MinValueValidator(36), MaxValueValidator(60)])
-    button_horizontal_padding = models.PositiveSmallIntegerField("espaço lateral dos botões", default=18, validators=[MinValueValidator(8), MaxValueValidator(36)])
-    card_border_radius = models.PositiveSmallIntegerField("arredondamento dos cartões", default=14, validators=[MinValueValidator(0), MaxValueValidator(32)])
-    card_shadow_intensity = models.CharField("sombra dos cartões", max_length=10, choices=ShadowIntensity.choices, default=ShadowIntensity.SUBTLE)
+    button_border_radius = models.PositiveSmallIntegerField("arredondamento dos botões", default=0, validators=[MinValueValidator(0), MaxValueValidator(24)])
+    button_height = models.PositiveSmallIntegerField("altura dos botões", default=40, validators=[MinValueValidator(36), MaxValueValidator(60)])
+    button_horizontal_padding = models.PositiveSmallIntegerField("espaço lateral dos botões", default=16, validators=[MinValueValidator(8), MaxValueValidator(36)])
+    card_border_radius = models.PositiveSmallIntegerField("arredondamento dos cartões", default=0, validators=[MinValueValidator(0), MaxValueValidator(32)])
+    card_shadow_intensity = models.CharField("sombra dos cartões", max_length=10, choices=ShadowIntensity.choices, default=ShadowIntensity.NONE)
     card_border_enabled = models.BooleanField("exibir borda nos cartões", default=True)
-    card_padding = models.PositiveSmallIntegerField("espaço interno dos cartões", default=24, validators=[MinValueValidator(12), MaxValueValidator(48)])
-    input_border_radius = models.PositiveSmallIntegerField("arredondamento dos campos", default=8, validators=[MinValueValidator(0), MaxValueValidator(20)])
-    input_height = models.PositiveSmallIntegerField("altura dos campos", default=44, validators=[MinValueValidator(36), MaxValueValidator(60)])
-    header_height = models.PositiveSmallIntegerField("altura do cabeçalho", default=76, validators=[MinValueValidator(56), MaxValueValidator(110)])
+    card_padding = models.PositiveSmallIntegerField("espaço interno dos cartões", default=20, validators=[MinValueValidator(12), MaxValueValidator(48)])
+    input_border_radius = models.PositiveSmallIntegerField("arredondamento dos campos", default=0, validators=[MinValueValidator(0), MaxValueValidator(20)])
+    input_height = models.PositiveSmallIntegerField("altura dos campos", default=40, validators=[MinValueValidator(36), MaxValueValidator(60)])
+    header_height = models.PositiveSmallIntegerField("altura do cabeçalho", default=62, validators=[MinValueValidator(56), MaxValueValidator(110)])
     navigation_spacing = models.PositiveSmallIntegerField("espaço entre links", default=18, validators=[MinValueValidator(8), MaxValueValidator(40)])
     logo_width = models.PositiveSmallIntegerField("largura do logotipo", default=180, validators=[MinValueValidator(80), MaxValueValidator(360)])
     logo_height = models.PositiveSmallIntegerField("altura do logotipo", default=40, validators=[MinValueValidator(24), MaxValueValidator(100)])
     footer_section_spacing = models.PositiveSmallIntegerField("espaço entre colunas do rodapé", default=48, validators=[MinValueValidator(16), MaxValueValidator(96)])
 
-    content_width = models.PositiveSmallIntegerField("largura do conteúdo", default=1180, choices=((1000, "1.000 px"), (1100, "1.100 px"), (1180, "1.180 px"), (1320, "1.320 px"), (1440, "1.440 px")))
+    content_width = models.PositiveSmallIntegerField("largura do conteúdo", default=1100, choices=((1000, "1.000 px"), (1100, "1.100 px"), (1180, "1.180 px"), (1320, "1.320 px"), (1440, "1.440 px")))
     horizontal_spacing = models.PositiveSmallIntegerField("espaçamento horizontal", default=24, choices=((16, "Compacto"), (20, "Reduzido"), (24, "Padrão"), (32, "Amplo")))
     section_spacing = models.PositiveSmallIntegerField("espaço entre seções", default=30, choices=((16, "16 px"), (20, "20 px"), (24, "24 px"), (30, "30 px"), (40, "40 px"), (48, "48 px"), (64, "64 px")))
     density = models.CharField("densidade geral", max_length=16, choices=Density.choices, default=Density.COMFORTABLE)
@@ -144,8 +144,34 @@ class SiteAppearance(models.Model):
     show_home_news = models.BooleanField("mostrar comunicados recentes", default=True)
     show_home_featured_exams = models.BooleanField("mostrar processos em destaque", default=True)
     show_home_institutions = models.BooleanField("mostrar faixa de instituições", default=True)
+    show_home_materials = models.BooleanField("mostrar materiais de estudo", default=True)
     featured_exam_count = models.PositiveSmallIntegerField("quantidade de processos em destaque", default=4, validators=[MinValueValidator(1), MaxValueValidator(8)])
     home_section_order = models.JSONField("ordem das seções iniciais", default=default_home_section_order)
+    home_title = models.CharField(
+        "título inicial",
+        max_length=180,
+        default="Encontre o que precisa para chegar mais preparado.",
+    )
+    home_description = models.CharField(
+        "descrição inicial",
+        max_length=320,
+        default="Vestibulares, provas anteriores, materiais de estudo e notícias reunidos em um só lugar.",
+    )
+    footer_description = models.CharField(
+        "descrição do rodapé",
+        max_length=240,
+        default="Informação organizada para você planejar o próximo passo.",
+    )
+    draft_settings = models.JSONField("rascunho visual", default=dict, blank=True)
+    draft_saved_at = models.DateTimeField("rascunho salvo em", null=True, blank=True)
+    draft_saved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="appearance_drafts",
+        verbose_name="rascunho salvo por",
+    )
 
     logo = models.ImageField("logotipo do site", upload_to="appearance/logos/", storage=DatabaseAppearanceStorage(), blank=True)
     favicon = models.ImageField("ícone do site", upload_to="appearance/favicons/", storage=DatabaseAppearanceStorage(), blank=True)

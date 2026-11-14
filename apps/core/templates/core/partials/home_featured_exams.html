@@ -1,6 +1,6 @@
 {% if appearance.show_home_featured_exams %}
 <section class="page-shell catalog-preview">
-  <div class="section-heading"><div><p class="eyebrow">Acompanhe as instituições</p><h2>Processos para conhecer</h2></div><a class="text-link" href="{% url 'admissions:list' %}">Ver catálogo completo <span aria-hidden="true">→</span></a></div>
+  <div class="section-heading"><div><p class="eyebrow">Explore o catálogo</p><h2>Processos seletivos</h2></div><a class="text-link" href="{% url 'admissions:list' %}">Ver catálogo completo <span aria-hidden="true">→</span></a></div>
   {% if examples %}<p class="notice notice-demo"><strong>Exemplos demonstrativos:</strong> os nomes abaixo ajudam a explorar o catálogo. Inscrições, datas e links oficiais só serão exibidos após validação administrativa.</p>
     <div class="card-grid card-grid-four">{% for exam in examples %}<article class="exam-card surface-card"><span class="tag tag-violet">Exemplo de cadastro</span><h3><a href="{% url 'admissions:detail' exam.slug %}">{{ exam.name }}</a></h3><p>{{ exam.institution.acronym|default:exam.institution.name }}</p><span class="status status-required">Verificação necessária</span></article>{% endfor %}</div>
   {% else %}<div class="empty-state surface-card"><h3>O catálogo está começando</h3><p>Cadastre instituições e processos seletivos pelo painel administrativo para publicar informações verificadas.</p></div>{% endif %}
