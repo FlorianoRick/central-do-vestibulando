@@ -1,7 +1,12 @@
+from pathlib import Path
+from uuid import uuid4
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+
+from apps.core.validators import validate_pdf_upload
 
 
 class Institution(models.Model):
@@ -22,7 +27,10 @@ class Institution(models.Model):
     city = models.CharField("cidade", max_length=100, blank=True)
     region = models.CharField("região", max_length=20, blank=True)
     website_url = models.URLField("site oficial", blank=True)
+    entrance_url = models.URLField("site oficial do vestibular", blank=True)
+    exam_archive_url = models.URLField("acervo oficial de provas", blank=True)
     description = models.TextField("descrição", blank=True)
+    source_checked_at = models.DateField("fontes verificadas em", null=True, blank=True)
     is_demo = models.BooleanField("cadastro demonstrativo", default=False)
     is_active = models.BooleanField("ativo", default=True)
     created_at = models.DateTimeField("criado em", auto_now_add=True)
@@ -91,8 +99,8 @@ class EntranceExam(models.Model):
     registration_url = models.URLField("link de inscrição", blank=True)
     source_url = models.URLField("fonte oficial", blank=True)
     candidate_guide_url = models.URLField("manual do candidato", blank=True)
-    announcement_file = models.FileField("edital", upload_to="editais/", blank=True)
-    candidate_guide_file = models.FileField("arquivo do manual", upload_to="manuais/", blank=True)
+    announcement_file = models.FileField("edital", upload_to="editais/", blank=True, validators=[validate_pdf_upload])
+    candidate_guide_file = models.FileField("arquivo do manual", upload_to="manuais/", blank=True, validators=[validate_pdf_upload])
     verification_status = models.CharField("situação da verificação", max_length=20, choices=VerificationStatus.choices, default=VerificationStatus.REQUIRED)
     verified_at = models.DateTimeField("verificado em", null=True, blank=True)
     verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="verified_exams", verbose_name="responsável pela verificação")
@@ -184,7 +192,7 @@ class ExamDocument(models.Model):
     exam = models.ForeignKey(EntranceExam, on_delete=models.CASCADE, related_name="documents", verbose_name="processo seletivo")
     title = models.CharField("título", max_length=180)
     document_type = models.CharField("tipo", max_length=20, choices=DocumentType.choices, default=DocumentType.OTHER)
-    file = models.FileField("arquivo", upload_to="documentos/", blank=True)
+    file = models.FileField("arquivo", upload_to="documentos/", blank=True, validators=[validate_pdf_upload])
     external_url = models.URLField("link do documento", blank=True)
     source_url = models.URLField("fonte oficial", blank=True)
     is_official = models.BooleanField("documento oficial", default=False)
@@ -218,9 +226,9 @@ class ExamPaper(models.Model):
     phase = models.CharField("fase", max_length=30, blank=True)
     paper_type = models.CharField("tipo de prova", max_length=12, choices=PaperType.choices, default=PaperType.OTHER)
     subject = models.ForeignKey("studies.StudySubject", on_delete=models.SET_NULL, null=True, blank=True, related_name="papers", verbose_name="matéria")
-    paper_file = models.FileField("arquivo da prova", upload_to="provas/", blank=True)
+    paper_file = models.FileField("arquivo da prova", upload_to="provas/", blank=True, validators=[validate_pdf_upload])
     paper_url = models.URLField("link da prova", blank=True)
-    answer_key_file = models.FileField("arquivo do gabarito", upload_to="gabaritos/", blank=True)
+    answer_key_file = models.FileField("arquivo do gabarito", upload_to="gabaritos/", blank=True, validators=[validate_pdf_upload])
     answer_key_url = models.URLField("link do gabarito", blank=True)
     solution_url = models.URLField("resolução comentada", blank=True)
     questions_count = models.PositiveSmallIntegerField("número de questões", null=True, blank=True)
@@ -241,6 +249,114 @@ class ExamPaper(models.Model):
     def clean(self):
         if self.is_official and not self.source_url:
             raise ValidationError({"source_url": "Informe a fonte oficial da prova ou do gabarito."})
+
+
+def archive_document_upload_to(instance, filename):
+    extension = Path(filename).suffix.lower()
+    institution_slug = instance.exam.institution.slug
+    return f"acervo/{institution_slug}/{instance.year or 'sem-ano'}/{uuid4().hex}{extension}"
+
+
+class ExamArchiveDocument(models.Model):
+    class Phase(models.TextChoices):
+        FIRST = "first", "Primeira fase"
+        SECOND = "second", "Segunda fase"
+        UNIQUE = "unique", "Fase única"
+        MULTIPLE = "multiple", "Múltiplas fases"
+
+    class DocumentType(models.TextChoices):
+        EXAM = "exam", "Prova"
+        ANSWER_KEY = "answer_key", "Gabarito"
+        CORRECTED_ANSWER_KEY = "corrected_answer_key", "Gabarito retificado"
+        EXPECTED_ANSWERS = "expected_answers", "Respostas esperadas"
+        ESSAY = "essay", "Proposta de redação"
+        OTHER = "other", "Outro documento"
+
+    class PublicationStatus(models.TextChoices):
+        DRAFT = "draft", "Rascunho"
+        PUBLISHED = "published", "Publicado"
+        UNAVAILABLE = "unavailable", "Arquivo indisponível"
+
+    exam = models.ForeignKey(
+        EntranceExam,
+        on_delete=models.PROTECT,
+        related_name="archive_documents",
+        verbose_name="vestibular",
+    )
+    year = models.PositiveSmallIntegerField("ano", null=True, blank=True)
+    semester = models.CharField("semestre", max_length=40, blank=True)
+    edition = models.CharField("edição", max_length=80, blank=True)
+    phase = models.CharField("fase", max_length=12, choices=Phase.choices, blank=True)
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="archive_documents",
+        verbose_name="curso",
+    )
+    document_type = models.CharField("tipo de documento", max_length=24, choices=DocumentType.choices)
+    title = models.CharField("título de exibição", max_length=180)
+    file = models.FileField("arquivo PDF", upload_to=archive_document_upload_to, blank=True, validators=[validate_pdf_upload])
+    original_url = models.URLField("link do documento original", blank=True)
+    source_url = models.URLField("página da fonte original", blank=True)
+    source_checked_at = models.DateField("fonte verificada em", null=True, blank=True)
+    publication_status = models.CharField(
+        "situação de publicação",
+        max_length=12,
+        choices=PublicationStatus.choices,
+        default=PublicationStatus.DRAFT,
+    )
+    uploaded_at = models.DateTimeField("enviado em", auto_now_add=True)
+    updated_at = models.DateTimeField("atualizado em", auto_now=True)
+
+    class Meta:
+        ordering = ["-year", "exam__institution__name", "edition", "phase", "title"]
+        indexes = [
+            models.Index(fields=["publication_status", "year"]),
+            models.Index(fields=["document_type", "phase"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["original_url"],
+                condition=~models.Q(original_url=""),
+                name="unique_exam_archive_original_url",
+            ),
+        ]
+        verbose_name = "documento do acervo"
+        verbose_name_plural = "documentos do acervo"
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def file_size(self):
+        if not self.file:
+            return None
+        try:
+            return self.file.size
+        except OSError:
+            return None
+
+    @property
+    def file_format(self):
+        if not self.file:
+            return ""
+        return Path(self.file.name).suffix.lstrip(".").upper()
+
+    def clean(self):
+        if self.publication_status == self.PublicationStatus.PUBLISHED:
+            errors = {}
+            if not self.file:
+                errors["file"] = "Envie o PDF antes de publicar o documento."
+            if not self.source_url:
+                errors["source_url"] = "Informe a fonte oficial do documento."
+            if not self.source_checked_at:
+                errors["source_checked_at"] = "Registre a data de verificação da fonte."
+            if errors:
+                raise ValidationError(errors)
+        if self.publication_status == self.PublicationStatus.UNAVAILABLE and not self.source_url:
+            raise ValidationError({"source_url": "Informe o acervo oficial consultado para marcar o arquivo como indisponível."})
 
 
 class ExamUpdateHistory(models.Model):

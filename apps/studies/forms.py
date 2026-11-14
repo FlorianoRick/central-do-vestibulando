@@ -19,8 +19,11 @@ class StudyPlanForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["target_exams"].queryset = EntranceExam.objects.filter(is_active=True).select_related("institution")
-        self.fields["subjects"].queryset = StudySubject.objects.all()
+        self.fields["target_exams"].queryset = EntranceExam.objects.filter(
+            is_active=True,
+            institution__is_active=True,
+        ).select_related("institution")
+        self.fields["subjects"].queryset = StudySubject.objects.filter(is_active=True)
         self.fields["weekly_hours"].help_text = "De 1 a 60 horas."
 
 
@@ -35,12 +38,23 @@ class StudySessionForm(forms.ModelForm):
             "notes": forms.Textarea(attrs={"rows": 2}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["subject"].queryset = StudySubject.objects.filter(is_active=True)
+
 
 class MockExamResultForm(forms.ModelForm):
     class Meta:
         model = MockExamResult
         fields = ("title", "exam", "taken_on", "score", "maximum_score", "notes")
         widgets = {"taken_on": forms.DateInput(attrs={"type": "date"}), "notes": forms.Textarea(attrs={"rows": 2})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["exam"].queryset = EntranceExam.objects.filter(
+            is_active=True,
+            institution__is_active=True,
+        ).select_related("institution")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -65,7 +79,10 @@ class SyllabusCompareForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["exams"].queryset = EntranceExam.objects.filter(is_active=True).select_related("institution")
+        self.fields["exams"].queryset = EntranceExam.objects.filter(
+            is_active=True,
+            institution__is_active=True,
+        ).select_related("institution")
 
     def clean_exams(self):
         exams = self.cleaned_data["exams"]

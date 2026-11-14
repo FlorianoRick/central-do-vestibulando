@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Editar {{ plan.title }} — Central do Vestibulando{% endblock %}
+{% block title %}Editar {{ plan.title }} — Vestibulando{% endblock %}
 {% block content %}
 <section class="narrow-page page-shell page-section"><a class="back-link" href="{% url 'studies:plan_detail' plan.pk %}">← Voltar ao plano</a><div class="surface-card planner-create"><p class="eyebrow">Personalize sua rotina</p><h1>Editar plano</h1><form method="post">{% csrf_token %}{% if form.non_field_errors %}<div class="form-alert">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}{% if field.name != "target_exams" and field.name != "subjects" %}{% include "partials/field.html" with field=field %}{% endif %}{% endfor %}<fieldset class="form-fieldset"><legend>Vestibulares-alvo</legend>{{ form.target_exams }}{% for error in form.target_exams.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</fieldset><fieldset class="form-fieldset"><legend>Matérias</legend>{{ form.subjects }}{% for error in form.subjects.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</fieldset><button class="button" type="submit">Salvar plano</button></form></div></section>
 {% endblock %}

@@ -4,15 +4,19 @@ from datetime import date, datetime, timedelta, timezone as datetime_timezone
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import F, Q
-from django.http import HttpResponse
+from django.http import FileResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils.text import get_valid_filename
 from django.utils import timezone
 
-from .models import CalendarEvent, Course, EntranceExam, ExamPaper, Institution
+from .models import CalendarEvent, Course, EntranceExam, ExamArchiveDocument, ExamPaper, Institution
 
 
 def exam_list(request):
-    exams = EntranceExam.objects.filter(is_active=True).select_related("institution").prefetch_related("courses")
+    exams = EntranceExam.objects.filter(
+        is_active=True,
+        institution__is_active=True,
+    ).select_related("institution").prefetch_related("courses")
     query = request.GET.get("q", "").strip()
     if query:
         exams = exams.filter(
@@ -79,7 +83,10 @@ def exam_list(request):
         "filters": {"state": state, "region": region, "type": process_type, "institution_type": institution_type, "status": status, "course": course, "sort": sort},
         "process_types": EntranceExam.ProcessType.choices,
         "institution_types": Institution.InstitutionType.choices,
-        "courses": Course.objects.all(),
+        "courses": Course.objects.filter(
+            exams__is_active=True,
+            exams__institution__is_active=True,
+        ).distinct(),
         "regions": ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"],
     })
 
@@ -89,6 +96,7 @@ def exam_detail(request, slug):
         EntranceExam.objects.select_related("institution").prefetch_related("courses", "syllabus_subjects", "documents", "papers"),
         slug=slug,
         is_active=True,
+        institution__is_active=True,
     )
     is_favorite = request.user.is_authenticated and exam.favorited_by.filter(user=request.user).exists()
     return render(request, "admissions/exam_detail.html", {"exam": exam, "is_favorite": is_favorite})
@@ -123,7 +131,13 @@ def exam_compare(request):
     if len(ids) > 3:
         messages.info(request, "A comparação mostra até três processos seletivos.")
         ids = ids[:3]
-    exams = list(EntranceExam.objects.filter(pk__in=ids, is_active=True).select_related("institution").prefetch_related("courses", "syllabus_subjects"))
+    exams = list(
+        EntranceExam.objects.filter(
+            pk__in=ids,
+            is_active=True,
+            institution__is_active=True,
+        ).select_related("institution").prefetch_related("courses", "syllabus_subjects")
+    )
     exams.sort(key=lambda exam: ids.index(str(exam.pk)) if str(exam.pk) in ids else 0)
     if not exams:
         messages.info(request, "Escolha até três processos na lista para comparar.")
@@ -206,7 +220,10 @@ def calendar(request):
         "week_value": week_date.isoformat(),
         "weekdays": ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
         "institutions": Institution.objects.filter(is_active=True).order_by("name"),
-        "exams": EntranceExam.objects.filter(is_active=True).select_related("institution").order_by("institution__name", "name"),
+        "exams": EntranceExam.objects.filter(
+            is_active=True,
+            institution__is_active=True,
+        ).select_related("institution").order_by("institution__name", "name"),
         "selected_institution": institution,
         "selected_exam_ids": selected_exam_ids,
         "favorite_event_ids": favorite_event_ids,
@@ -247,32 +264,139 @@ def calendar_ics(request):
 
 
 def paper_list(request, area=None):
-    papers = ExamPaper.objects.filter(exam__is_active=True).select_related("exam", "exam__institution", "subject")
+    papers = ExamPaper.objects.filter(
+        exam__is_active=True,
+        exam__institution__is_active=True,
+    ).select_related("exam", "exam__institution", "subject")
+    archive_documents = ExamArchiveDocument.objects.filter(
+        exam__is_active=True,
+        exam__institution__is_active=True,
+        publication_status=ExamArchiveDocument.PublicationStatus.PUBLISHED,
+        source_url__gt="",
+        source_checked_at__isnull=False,
+        file__gt="",
+    ).select_related("exam", "exam__institution", "course")
     query = request.GET.get("q", "").strip()
     year = request.GET.get("ano", "").strip()
     subject = request.GET.get("materia", "").strip()
     paper_type = request.GET.get("tipo", "").strip()
+    institution = request.GET.get("instituicao", "").strip()
+    course = request.GET.get("curso", "").strip()
     area = (area or request.GET.get("area", "provas")).strip()
     if query:
         papers = papers.filter(Q(title__icontains=query) | Q(exam__name__icontains=query) | Q(exam__institution__name__icontains=query) | Q(exam__institution__acronym__icontains=query))
+        archive_documents = archive_documents.filter(
+            Q(title__icontains=query)
+            | Q(exam__name__icontains=query)
+            | Q(exam__institution__name__icontains=query)
+            | Q(exam__institution__acronym__icontains=query)
+        )
     if year.isdigit():
         papers = papers.filter(year=int(year))
+        archive_documents = archive_documents.filter(year=int(year))
     if subject:
         papers = papers.filter(subject__slug=subject)
+    if institution:
+        archive_documents = archive_documents.filter(exam__institution__slug=institution)
     if paper_type:
         papers = papers.filter(paper_type=paper_type)
+        archive_document_types = {
+            "first": ExamArchiveDocument.DocumentType.EXAM,
+            "second": ExamArchiveDocument.DocumentType.EXAM,
+            "unique": ExamArchiveDocument.DocumentType.EXAM,
+            "essay": ExamArchiveDocument.DocumentType.ESSAY,
+            "exam": ExamArchiveDocument.DocumentType.EXAM,
+            "answer_key": ExamArchiveDocument.DocumentType.ANSWER_KEY,
+            "corrected_answer_key": ExamArchiveDocument.DocumentType.CORRECTED_ANSWER_KEY,
+            "expected_answers": ExamArchiveDocument.DocumentType.EXPECTED_ANSWERS,
+        }
+        if paper_type in archive_document_types:
+            archive_documents = archive_documents.filter(
+                document_type=archive_document_types[paper_type]
+            )
+            if paper_type in {"first", "second", "unique"}:
+                archive_documents = archive_documents.filter(phase=paper_type)
+        else:
+            archive_documents = archive_documents.none()
+    if course:
+        archive_documents = archive_documents.filter(course__slug=course)
     if area == "gabaritos":
         papers = papers.exclude(Q(answer_key_file="") & Q(answer_key_url=""))
+        archive_documents = archive_documents.filter(
+            document_type__in=(
+                ExamArchiveDocument.DocumentType.ANSWER_KEY,
+                ExamArchiveDocument.DocumentType.CORRECTED_ANSWER_KEY,
+                ExamArchiveDocument.DocumentType.EXPECTED_ANSWERS,
+            )
+        )
+    else:
+        archive_documents = archive_documents.filter(
+            document_type__in=(
+                ExamArchiveDocument.DocumentType.EXAM,
+                ExamArchiveDocument.DocumentType.ESSAY,
+                ExamArchiveDocument.DocumentType.OTHER,
+            )
+        )
     page_obj = Paginator(papers, 12).get_page(request.GET.get("page"))
     from apps.studies.models import StudySubject
     return render(request, "admissions/paper_list.html", {
         "papers": page_obj.object_list,
+        "archive_documents": archive_documents[:50],
         "page_obj": page_obj,
         "query": query,
         "year": year,
         "selected_subject": subject,
         "paper_type": paper_type,
+        "selected_institution": institution,
+        "selected_course": course,
         "area": area,
-        "subjects": StudySubject.objects.all(),
+        "subjects": StudySubject.objects.filter(is_active=True),
+        "institutions": Institution.objects.filter(is_active=True),
+        "archive_sources": Institution.objects.filter(
+            is_active=True,
+            is_demo=False,
+            exam_archive_url__gt="",
+            source_checked_at__isnull=False,
+        ).order_by("acronym"),
+        "courses": Course.objects.filter(
+            archive_documents__publication_status=ExamArchiveDocument.PublicationStatus.PUBLISHED,
+            archive_documents__exam__is_active=True,
+            archive_documents__exam__institution__is_active=True,
+        ).distinct(),
         "paper_types": ExamPaper.PaperType.choices,
+        "archive_types": ExamArchiveDocument.DocumentType.choices,
     })
+
+
+def archive_document_download(request, pk):
+    document = get_object_or_404(
+        ExamArchiveDocument.objects.select_related("exam__institution"),
+        pk=pk,
+    )
+    is_published = (
+        document.publication_status == ExamArchiveDocument.PublicationStatus.PUBLISHED
+        and document.exam.is_active
+        and document.exam.institution.is_active
+        and bool(document.source_url)
+        and document.source_checked_at is not None
+    )
+    if not is_published and not (
+        request.user.is_authenticated
+        and request.user.is_active
+        and request.user.is_staff
+    ):
+        raise Http404
+    if not document.file:
+        raise Http404
+    try:
+        uploaded_file = document.file.open("rb")
+    except (FileNotFoundError, OSError):
+        raise Http404 from None
+    response = FileResponse(
+        uploaded_file,
+        as_attachment=True,
+        filename=get_valid_filename(document.file.name.rsplit("/", 1)[-1]),
+        content_type="application/pdf",
+    )
+    response["X-Content-Type-Options"] = "nosniff"
+    return response

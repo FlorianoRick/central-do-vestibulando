@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import CalendarEvent, Course, EntranceExam, ExamDocument, ExamPaper, ExamUpdateHistory, Institution, ReviewQueueItem
+from .models import CalendarEvent, Course, EntranceExam, ExamArchiveDocument, ExamDocument, ExamPaper, ExamUpdateHistory, Institution, ReviewQueueItem
 
 
 @admin.register(Institution)
@@ -81,6 +81,22 @@ class ExamPaperAdmin(admin.ModelAdmin):
     list_filter = ("paper_type", "year", "is_official", "is_demo")
     search_fields = ("title", "exam__name", "exam__institution__name")
     autocomplete_fields = ("exam", "subject")
+
+
+@admin.register(ExamArchiveDocument)
+class ExamArchiveDocumentAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "exam",
+        "year",
+        "edition",
+        "phase",
+        "document_type",
+        "publication_status",
+    )
+    list_filter = ("publication_status", "document_type", "phase", "year")
+    search_fields = ("title", "exam__name", "exam__institution__name", "edition")
+    autocomplete_fields = ("exam", "course")
 
 
 @admin.register(ExamUpdateHistory)

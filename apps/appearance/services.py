@@ -5,7 +5,14 @@ from django.db import models
 from .models import SiteAppearance, SiteAppearanceHistory
 
 
-EXCLUDED_SNAPSHOT_FIELDS = {"singleton_key", "updated_at", "last_modified_by"}
+EXCLUDED_SNAPSHOT_FIELDS = {
+    "singleton_key",
+    "updated_at",
+    "last_modified_by",
+    "draft_settings",
+    "draft_saved_at",
+    "draft_saved_by",
+}
 
 
 def get_active_appearance(request=None):

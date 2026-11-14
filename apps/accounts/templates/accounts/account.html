@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Minha conta — Central do Vestibulando{% endblock %}
+{% block title %}Minha conta — Vestibulando{% endblock %}
 {% block content %}
 <section class="page-shell page-section">
   <div class="page-heading"><div><p class="eyebrow">Área do estudante</p><h1>Olá, {{ request.user.profile.full_name|default:request.user.username }}</h1><p>Seus dados, vestibulares salvos e atividades em um só lugar.</p></div><a class="button button-outline" href="{% url 'studies:planner' %}">Meu plano de estudos</a></div>

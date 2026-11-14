@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Central do Vestibulando — organize seu próximo passo{% endblock %}
+{% block title %}Vestibulando — organize sua preparação{% endblock %}
 {% block content %}
 <section class="home-hero page-shell{% if not appearance.show_home_event_panel %} home-hero-no-panel{% endif %}">
   <div class="hero-copy{% if appearance.hero_alignment == 'center' %} alignment-center{% endif %}">
     <p class="eyebrow">Seu caminho até a universidade</p>
-    <h1>Encontre o que precisa para chegar <span>mais preparado.</span></h1>
-    <p class="hero-description">Vestibulares, prazos, provas anteriores e materiais de estudo reunidos em um só lugar.</p>
+    <h1>{{ appearance.home_title }}</h1>
+    <p class="hero-description">{{ appearance.home_description }}</p>
     <form class="search-form home-search" method="get" action="{% url 'admissions:list' %}">
       <label class="sr-only" for="home-search">Busque por instituição, vestibular, curso ou estado</label>
       <span class="search-icon" aria-hidden="true">⌕</span>
@@ -13,9 +13,8 @@
       <button class="button" type="submit">Buscar vestibulares</button>
     </form>
     <div class="quick-links" aria-label="Acessos rápidos">
-      <a href="{% url 'admissions:calendar' %}">Ver calendário</a>
-      <a href="{% url 'admissions:institutions' %}">Instituições</a>
       <a href="{% url 'admissions:papers' %}">Acessar provas</a>
+      <a href="{% url 'studies:list' %}">Materiais de estudo</a>
       <a href="{% url 'studies:planner' %}">Planejar estudos</a>
     </div>
   </div>
@@ -27,9 +26,9 @@
           <li><span class="event-date"><strong>{{ event.starts_at|date:"d" }}</strong><small>{{ event.starts_at|date:"M" }}</small></span><span><strong>{{ event.title }}</strong><small>{{ event.exam.institution.acronym|default:event.exam.institution.name }}</small></span></li>
         {% endfor %}
       </ul>
-      <a class="text-link" href="{% url 'admissions:calendar' %}">Ver todos os prazos <span aria-hidden="true">→</span></a>
+      <a class="text-link" href="{% url 'admissions:list' %}">Consultar vestibulares <span aria-hidden="true">→</span></a>
     {% else %}
-      <div class="empty-mini"><strong>Nenhum prazo oficial confirmado</strong><p>As datas aparecem aqui depois da verificação da fonte oficial.</p><a class="text-link" href="{% url 'admissions:calendar' %}">Abrir calendário <span aria-hidden="true">→</span></a></div>
+      <div class="empty-mini"><strong>Nenhum prazo oficial confirmado</strong><p>As datas aparecem aqui depois da verificação da fonte oficial.</p><a class="text-link" href="{% url 'admissions:list' %}">Consultar vestibulares <span aria-hidden="true">→</span></a></div>
     {% endif %}
   </aside>{% endif %}
 </section>

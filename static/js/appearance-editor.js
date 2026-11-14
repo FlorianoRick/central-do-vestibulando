@@ -43,6 +43,22 @@ document.addEventListener("DOMContentLoaded", () => {
     control.addEventListener("change", () => updatePreviewVariable(control));
   });
 
+  [
+    ["home_title", "[data-preview-home-title]"],
+    ["home_description", "[data-preview-home-description]"],
+    ["footer_description", "[data-preview-footer-description]"],
+  ].forEach(([fieldName, selector]) => {
+    const control = form.elements.namedItem(fieldName);
+    const target = document.querySelector(selector);
+    if (!control || !target) return;
+    const updateText = () => {
+      target.textContent = control.value;
+    };
+    updateText();
+    control.addEventListener("input", updateText);
+    control.addEventListener("change", updateText);
+  });
+
   form.querySelectorAll("[data-color-picker]").forEach((picker) => {
     const textInput = document.getElementById(picker.dataset.colorPicker);
     if (!textInput) return;

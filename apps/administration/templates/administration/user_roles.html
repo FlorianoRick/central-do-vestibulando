@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Usuários e permissões — Vestibulando{% endblock %}
+{% block content %}
+<section class="page-shell page-section">
+  <a class="back-link" href="{% url 'administration:dashboard' %}">← Gestão interna</a>
+  <div class="page-heading"><div><p class="eyebrow">Acesso administrativo</p><h1>Usuários e permissões</h1><p>Os papéis concedem acesso à gestão e ao Django Admin. Senhas e dados de conta não são alterados aqui.</p></div></div>
+  <div class="notice notice-info">A última pessoa administradora ativa não pode ser desativada nem perder esse papel. As alterações são registradas no histórico administrativo.</div>
+  <div class="admin-user-list">
+    {% for account in users %}
+    <form method="post" class="surface-card admin-user-card">
+      {% csrf_token %}<input type="hidden" name="user_id" value="{{ account.pk }}">
+      <div class="admin-user-heading"><div><h2>{{ account.get_username }}</h2><p>{{ account.email|default:"Sem e-mail cadastrado" }}</p></div><span class="tag{% if not account.is_active %} tag-violet{% endif %}">{% if account.is_active %}Ativa{% else %}Desativada{% endif %}</span></div>
+      <div class="admin-role-fields">
+        <label><input type="checkbox" name="is_active" {% if account.is_active %}checked{% endif %}> Conta ativa</label>
+        <label><input type="checkbox" name="is_staff" {% if account.is_staff %}checked{% endif %}> Acesso à gestão</label>
+        <label><input type="checkbox" name="is_superuser" {% if account.is_superuser %}checked{% endif %}> Administrador</label>
+      </div>
+      <button class="button button-small" type="submit">Salvar permissões</button>
+    </form>
+    {% empty %}<p class="empty-state surface-card">Nenhuma conta encontrada.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

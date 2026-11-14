@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Comparar vestibulares — Central do Vestibulando{% endblock %}
+{% block title %}Comparar vestibulares — Vestibulando{% endblock %}
 {% block content %}
 <section class="page-shell page-section"><a class="back-link" href="{% url 'admissions:list' %}">← Voltar ao catálogo</a><div class="page-heading"><div><p class="eyebrow">Escolha com mais clareza</p><h1>Comparar vestibulares</h1><p>Veja lado a lado as informações disponíveis para até três processos seletivos.</p></div></div>
   {% if exams %}<div class="table-scroll surface-card"><table class="comparison-table"><thead><tr><th scope="col">Critério</th>{% for exam in exams %}<th scope="col">{{ exam.name }}<small>{{ exam.institution.acronym|default:exam.institution.name }}</small></th>{% endfor %}</tr></thead><tbody>

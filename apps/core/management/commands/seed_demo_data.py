@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
@@ -8,7 +10,6 @@ from apps.studies.models import StudyMaterial, StudySubject
 
 SUBJECTS = {
     "Biologia": "Revise conceitos com esquemas próprios e conecte processos biológicos a exemplos do cotidiano.",
-    "Espanhol": "Pratique leitura de textos, observe cognatos e revise vocabulário em contexto.",
     "Filosofia": "Compare ideias de diferentes autores e registre os conceitos centrais com suas próprias palavras.",
     "Física": "Resolva exercícios mostrando as unidades e as etapas do raciocínio, além do resultado final.",
     "Geografia": "Relacione mapas, escalas e indicadores a processos sociais, ambientais e econômicos.",
@@ -17,27 +18,37 @@ SUBJECTS = {
     "Literatura": "Observe narrador, linguagem e contexto da obra antes de elaborar uma interpretação.",
     "Matemática": "Pratique um tipo de problema por vez e confira os cálculos com uma estratégia diferente.",
     "Química": "Conecte representações de partículas, equações e fenômenos observáveis.",
-    "Redação": "Planeje a tese, organize argumentos e reserve tempo para revisar coesão e clareza.",
     "Sociologia": "Defina os conceitos e use exemplos sociais para comparar perspectivas teóricas.",
     "Língua Portuguesa": "Leia com atenção ao gênero, à intenção comunicativa e às escolhas linguísticas do texto.",
 }
 
 
 EXAMS = [
-    ("INEP", "Instituto Nacional de Estudos e Pesquisas Educacionais", "inep", "federal", "ENEM", "enem"),
-    ("USP", "Universidade de São Paulo", "usp", "estadual", "FUVEST — USP", "vestibular"),
-    ("UNICAMP", "Universidade Estadual de Campinas", "unicamp", "estadual", "Comvest — UNICAMP", "vestibular"),
-    ("UNESP", "Universidade Estadual Paulista", "unesp", "estadual", "Vestibular UNESP", "vestibular"),
-    ("FATEC", "Faculdades de Tecnologia do Estado de São Paulo", "fatec", "estadual", "Vestibular FATEC", "vestibular"),
-    ("UNIFESP", "Universidade Federal de São Paulo", "unifesp", "federal", "Ingresso — UNIFESP", "vestibular"),
-    ("UFRGS", "Universidade Federal do Rio Grande do Sul", "ufrgs", "federal", "Vestibular UFRGS", "vestibular"),
-    ("UFPR", "Universidade Federal do Paraná", "ufpr", "federal", "Vestibular UFPR", "vestibular"),
-    ("UERJ", "Universidade do Estado do Rio de Janeiro", "uerj", "estadual", "Vestibular UERJ", "vestibular"),
-    ("UnB", "Universidade de Brasília", "unb", "federal", "Ingresso — UnB", "vestibular"),
-    ("IFSP", "Instituto Federal de São Paulo", "ifsp", "instituto", "Processo seletivo — IFSP", "vestibular"),
-    ("SISU", "Sistema de Seleção Unificada", "sisu", "nacional", "SISU", "sisu"),
-    ("ProUni", "Programa Universidade para Todos", "prouni", "nacional", "ProUni", "prouni"),
-    ("FIES", "Fundo de Financiamento Estudantil", "fies", "nacional", "FIES", "fies"),
+    (
+        "FATEC", "Faculdades de Tecnologia do Estado de São Paulo", "fatec", "estadual",
+        "Vestibular FATEC", "vestibular", "https://www.cps.sp.gov.br/fatec/",
+        "https://vestibular.fatec.sp.gov.br/", "https://vestibular.fatec.sp.gov.br/provas-gabaritos/",
+    ),
+    (
+        "UNESP", "Universidade Estadual Paulista", "unesp", "estadual",
+        "Vestibular UNESP", "vestibular", "https://www.unesp.br/",
+        "https://vestibular.unesp.br/", "https://vestibular.unesp.br/portal#!/arquivo/",
+    ),
+    (
+        "UNICAMP", "Universidade Estadual de Campinas", "unicamp", "estadual",
+        "Vestibular UNICAMP", "vestibular", "https://www.unicamp.br/",
+        "https://www.comvest.unicamp.br/", "https://www.comvest.unicamp.br/vestibulares-anteriores/",
+    ),
+    (
+        "USP", "Universidade de São Paulo", "usp", "estadual",
+        "FUVEST — USP", "vestibular", "https://www.usp.br/",
+        "https://www.fuvest.br/", "https://www.fuvest.br/acervo-vestibular/",
+    ),
+    (
+        "PUC-SP", "Pontifícia Universidade Católica de São Paulo", "puc-sp", "privada",
+        "Vestibular PUC-SP", "vestibular", "https://www.pucsp.br/",
+        "https://nucvest.com.br/", "https://nucvest.com.br/processos-anteriores.html",
+    ),
 ]
 
 
@@ -72,15 +83,20 @@ class Command(BaseCommand):
             )
             subjects[name] = subject
 
-        for acronym, name, slug, institution_type, exam_name, process_type in EXAMS:
+        for acronym, name, slug, institution_type, exam_name, process_type, website_url, entrance_url, archive_url in EXAMS:
             institution, _ = Institution.objects.get_or_create(
                 slug=slug,
                 defaults={
                     "name": name,
                     "acronym": acronym,
                     "institution_type": institution_type,
-                    "description": "Registro demonstrativo sem calendário ou link oficial cadastrado.",
-                    "is_demo": True,
+                    "website_url": website_url,
+                    "entrance_url": entrance_url,
+                    "exam_archive_url": archive_url,
+                    "description": "Consulte o vestibular e o acervo oficial para informações atualizadas.",
+                    "source_checked_at": date(2026, 11, 14),
+                    "is_demo": False,
+                    "is_active": True,
                 },
             )
             EntranceExam.objects.get_or_create(
@@ -126,5 +142,5 @@ class Command(BaseCommand):
             article_count += int(created)
 
         self.stdout.write(self.style.SUCCESS(
-            f"Dados demonstrativos disponíveis: {EntranceExam.objects.filter(is_demo=True).count()} processos, {len(subjects)} matérias, {material_count} materiais e {article_count} guias novos."
+            f"Dados demonstrativos disponíveis: {EntranceExam.objects.filter(is_demo=True, institution__is_active=True).count()} processos no catálogo ativo, {len(subjects)} matérias, {material_count} materiais e {article_count} guias novos."
         ))

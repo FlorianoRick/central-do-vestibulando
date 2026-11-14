@@ -1,0 +1,40 @@
+{% if appearance.show_home_news or appearance.show_home_materials %}
+<section class="page-shell home-bottom-grid">
+  {% if appearance.show_home_news %}
+  <div class="home-bottom-column surface-card">
+    <div class="section-heading">
+      <div><p class="eyebrow">Acompanhe</p><h2>Notícias</h2></div>
+      <a class="text-link" href="{% url 'news:list' %}">Ver todas <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="home-bottom-list">
+      {% for article in recent_news|slice:":2" %}
+        <article>
+          <strong><a href="{% url 'news:detail' article.slug %}">{{ article.title }}</a></strong>
+          <span>{% if article.institution %}{{ article.institution.acronym|default:article.institution.name }} · {% endif %}{% if article.is_demo %}Conteúdo demonstrativo{% elif article.published_at %}{{ article.published_at|date:"d/m/Y" }}{% else %}Data não informada{% endif %}</span>
+        </article>
+      {% empty %}
+        <p class="empty-note">Notícias verificadas serão publicadas aqui.</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% if appearance.show_home_materials %}
+  <div class="home-bottom-column surface-card">
+    <div class="section-heading">
+      <div><p class="eyebrow">Prepare-se com organização</p><h2>Materiais e guias</h2></div>
+      <a class="text-link" href="{% url 'studies:list' %}">Ver materiais <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="home-bottom-list">
+    {% for resource in home_materials %}
+      <article>
+        <strong><a href="{{ resource.source_url }}" target="_blank" rel="noopener">{{ resource.title }}</a></strong>
+        <span>{{ resource.subject.name }} · {{ resource.source_name }}</span>
+      </article>
+    {% empty %}
+      <p class="empty-note">Materiais verificados serão publicados aqui.</p>
+    {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endif %}

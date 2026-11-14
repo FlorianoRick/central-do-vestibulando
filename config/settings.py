@@ -1,4 +1,4 @@
-"""Django settings for Central do Vestibulando."""
+"""Configuração Django da plataforma Vestibulando."""
 
 import os
 from pathlib import Path
@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "apps.studies.apps.StudiesConfig",
     "apps.news.apps.NewsConfig",
     "apps.appearance.apps.AppearanceConfig",
+    "apps.administration.apps.AdministrationConfig",
 ]
 
 MIDDLEWARE = [
@@ -113,7 +114,7 @@ if EMAIL_HOST:
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
     EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Central do Vestibulando <nao-responda@example.com>")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Vestibulando <nao-responda@example.com>")
 
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

@@ -123,7 +123,15 @@ class SiteAppearanceForm(forms.ModelForm):
 
     class Meta:
         model = SiteAppearance
-        exclude = ("singleton_key", "updated_at", "last_modified_by")
+        exclude = (
+            "singleton_key",
+            "updated_at",
+            "last_modified_by",
+            "show_home_institutions",
+            "draft_settings",
+            "draft_saved_at",
+            "draft_saved_by",
+        )
         widgets = {
             "home_section_order": forms.HiddenInput(),
             "line_height": forms.NumberInput(attrs={"step": "0.05", "min": "1.2", "max": "2.0"}),

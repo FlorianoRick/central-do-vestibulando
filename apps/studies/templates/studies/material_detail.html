@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ material.title }} — Central do Vestibulando{% endblock %}
+{% block title %}{{ material.title }} — Vestibulando{% endblock %}
 {% block content %}
 <article class="narrow-page page-shell page-section material-detail"><a class="back-link" href="{% url 'studies:list' %}?materia={{ material.subject.slug }}">← {{ material.subject.name }}</a><p class="eyebrow">{{ material.subject.name }} · {{ material.get_material_type_display }}</p><h1>{{ material.title }}</h1>{% if material.is_demo %}<div class="notice notice-info">Conteúdo demonstrativo para estudo. Confira o programa oficial do processo seletivo escolhido.</div>{% endif %}<p class="article-summary">{{ material.summary }}</p>
   <div class="surface-card material-body prose-text">{{ material.content|linebreaks }}</div>

@@ -1,12 +1,29 @@
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 
 from .models import NewsArticle
 
 
+def _public_articles():
+    return NewsArticle.objects.filter(
+        is_published=True,
+    ).filter(
+        Q(is_demo=True)
+        | Q(
+            review_status=NewsArticle.ReviewStatus.VERIFIED,
+            source_checked_at__isnull=False,
+            source_url__gt="",
+            published_at__isnull=False,
+        )
+    ).filter(
+        Q(published_at__isnull=True) | Q(published_at__lte=timezone.now())
+    )
+
+
 def news_list(request):
-    articles = NewsArticle.objects.filter(is_published=True).select_related("institution")
+    articles = _public_articles().select_related("institution")
     query = request.GET.get("q", "").strip()
     if query:
         articles = articles.filter(Q(title__icontains=query) | Q(summary__icontains=query) | Q(content__icontains=query))
@@ -15,5 +32,8 @@ def news_list(request):
 
 
 def news_detail(request, slug):
-    article = get_object_or_404(NewsArticle.objects.select_related("institution"), slug=slug, is_published=True)
+    article = get_object_or_404(
+        _public_articles().select_related("institution"),
+        slug=slug,
+    )
     return render(request, "news/news_detail.html", {"article": article})

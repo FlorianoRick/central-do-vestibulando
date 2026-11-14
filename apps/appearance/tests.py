@@ -117,13 +117,13 @@ class SiteAppearanceTests(TestCase):
 
     def test_default_configuration_is_created_once_and_reaches_public_pages(self):
         appearance = get_active_appearance()
-        self.assertEqual(appearance.primary_color, "#2457C5")
+        self.assertEqual(appearance.primary_color, "#285BCB")
         self.assertEqual(get_active_appearance().pk, appearance.pk)
         self.assertEqual(SiteAppearance.objects.count(), 1)
 
         response = self.client.get(reverse("core:home"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "--blue: #2457C5")
+        self.assertContains(response, "--blue: #285BCB")
 
     def test_only_staff_with_change_permission_can_open_editor(self):
         anonymous_response = self.client.get(self.editor_url)
@@ -152,11 +152,47 @@ class SiteAppearanceTests(TestCase):
         self.assertEqual(appearance.last_modified_by, self.staff_user)
         history = SiteAppearanceHistory.objects.get()
         self.assertEqual(history.changed_by, self.staff_user)
-        self.assertEqual(history.previous_settings["primary_color"], "#2457C5")
+        self.assertEqual(history.previous_settings["primary_color"], "#285BCB")
         self.assertEqual(history.new_settings["primary_color"], "#0A1B2C")
 
         home_response = self.client.get(reverse("core:home"))
         self.assertContains(home_response, "--blue: #0A1B2C")
+
+    def test_saving_a_draft_does_not_change_the_published_theme(self):
+        self.client.force_login(self.staff_user)
+        payload = self.form_payload()
+        payload["primary_color"] = "#123456"
+
+        response = self.client.post(self.editor_url, {**payload, "save_draft": "1"})
+
+        self.assertRedirects(response, self.editor_url)
+        appearance = get_active_appearance()
+        self.assertEqual(appearance.primary_color, "#285BCB")
+        self.assertEqual(appearance.draft_settings["primary_color"], "#123456")
+        self.assertEqual(appearance.draft_saved_by, self.staff_user)
+        self.assertEqual(SiteAppearanceHistory.objects.count(), 0)
+        self.assertContains(self.client.get(reverse("core:home")), "--blue: #285BCB")
+
+    def test_publishing_a_saved_draft_activates_and_clears_it(self):
+        appearance = get_active_appearance()
+        appearance.draft_settings = self.form_payload(appearance)
+        appearance.draft_settings["primary_color"] = "#123456"
+        appearance.save(update_fields=["draft_settings"])
+        self.client.force_login(self.staff_user)
+
+        response = self.client.post(
+            self.editor_url,
+            {
+                **self.form_payload(appearance),
+                "primary_color": "#123456",
+                "publish_changes": "1",
+            },
+        )
+
+        self.assertRedirects(response, self.editor_url)
+        appearance.refresh_from_db()
+        self.assertEqual(appearance.primary_color, "#123456")
+        self.assertEqual(appearance.draft_settings, {})
 
     def test_invalid_color_is_rejected_without_publishing(self):
         self.client.force_login(self.staff_user)
@@ -167,7 +203,7 @@ class SiteAppearanceTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context["form"].errors["primary_color"])
-        self.assertEqual(get_active_appearance().primary_color, "#2457C5")
+        self.assertEqual(get_active_appearance().primary_color, "#285BCB")
         self.assertEqual(SiteAppearanceHistory.objects.count(), 0)
 
     def test_typography_components_and_home_layout_are_saved(self):
@@ -178,7 +214,7 @@ class SiteAppearanceTests(TestCase):
             "button_height": "52",
             "featured_exam_count": "6",
             "hero_alignment": "center",
-            "home_section_order": json.dumps(["institutions", "updates", "featured_exams", "exam_overview"]),
+            "home_section_order": json.dumps(["materials", "updates", "featured_exams", "exam_overview"]),
         })
         payload.pop("show_home_news")
 
@@ -190,20 +226,20 @@ class SiteAppearanceTests(TestCase):
         self.assertEqual(appearance.button_height, 52)
         self.assertEqual(appearance.featured_exam_count, 6)
         self.assertEqual(appearance.hero_alignment, "center")
-        self.assertEqual(appearance.home_section_order[0], "institutions")
+        self.assertEqual(appearance.home_section_order[0], "materials")
         self.assertFalse(appearance.show_home_news)
         home_response = self.client.get(reverse("core:home"))
-        self.assertContains(home_response, "Um catálogo que pode crescer")
-        self.assertNotContains(home_response, "Comunicados recentes")
+        self.assertContains(home_response, "Processos seletivos")
+        self.assertNotContains(home_response, "Notícias recentes")
         self.assertLess(
-            home_response.content.index(b"Um cat\xc3\xa1logo que pode crescer"),
             home_response.content.index(b"Resultados previstos"),
+            home_response.content.index(b"Processos seletivos"),
         )
 
     def test_home_section_order_must_contain_each_allowed_section_once(self):
         self.client.force_login(self.staff_user)
         payload = self.form_payload()
-        payload["home_section_order"] = json.dumps(["updates", "updates", "featured_exams", "institutions"])
+        payload["home_section_order"] = json.dumps(["updates", "updates", "featured_exams", "materials"])
 
         response = self.client.post(self.editor_url, payload)
 
@@ -214,7 +250,7 @@ class SiteAppearanceTests(TestCase):
     def test_home_section_order_rejects_non_string_values(self):
         self.client.force_login(self.staff_user)
         payload = self.form_payload()
-        payload["home_section_order"] = json.dumps([{}, "updates", "featured_exams", "institutions"])
+        payload["home_section_order"] = json.dumps([{}, "updates", "featured_exams", "materials"])
 
         response = self.client.post(self.editor_url, payload)
 
@@ -258,7 +294,7 @@ class SiteAppearanceTests(TestCase):
 
         self.assertRedirects(response, self.editor_url)
         appearance.refresh_from_db()
-        self.assertEqual(appearance.primary_color, "#2457C5")
+        self.assertEqual(appearance.primary_color, "#285BCB")
         self.assertEqual(appearance.last_modified_by, self.staff_user)
         self.assertEqual(SiteAppearanceHistory.objects.count(), 1)
 

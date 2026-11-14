@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ plan.title }} — Central do Vestibulando{% endblock %}
+{% block title %}{{ plan.title }} — Vestibulando{% endblock %}
 {% block content %}
 <section class="page-shell page-section"><a class="back-link" href="{% url 'studies:planner' %}">← Meu planejamento</a><div class="page-heading"><div><p class="eyebrow">Plano de estudos</p><h1>{{ plan.title }}</h1><p>{{ plan.weekly_hours }} horas por semana · meta diária de {{ plan.daily_goal_minutes }} minutos</p></div><div class="plan-heading-actions"><div class="progress-summary"><strong>{{ completed_count }}</strong><span>sessões concluídas</span><strong>{{ total_hours|floatformat:1 }} h</strong><span>de estudo registrado</span></div><a class="button button-outline button-small" href="{% url 'studies:edit_plan' plan.pk %}">Editar plano</a><form method="post" action="{% url 'studies:archive_plan' plan.pk %}" data-confirm="Arquivar este plano? As sessões serão preservadas.">{% csrf_token %}<button class="button button-small button-outline" type="submit">Arquivar</button></form></div></div>
   {% if plan.target_exams.exists %}<div class="subject-chips">{% for exam in plan.target_exams.all %}<a href="{% url 'admissions:detail' exam.slug %}">{{ exam.name }}</a>{% endfor %}</div>{% endif %}

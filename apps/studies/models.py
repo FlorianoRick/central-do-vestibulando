@@ -2,11 +2,14 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from apps.core.validators import validate_pdf_upload
+
 
 class StudySubject(models.Model):
     name = models.CharField("matéria", max_length=100, unique=True)
     slug = models.SlugField("identificador", unique=True)
     description = models.TextField("descrição", blank=True)
+    is_active = models.BooleanField("ativa", default=True)
 
     class Meta:
         ordering = ["name"]
@@ -15,6 +18,44 @@ class StudySubject(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class StudyResource(models.Model):
+    subject = models.ForeignKey(
+        StudySubject,
+        on_delete=models.CASCADE,
+        related_name="resources",
+        verbose_name="matéria",
+    )
+    title = models.CharField("título do tópico", max_length=180)
+    description = models.CharField("descrição", max_length=320)
+    source_name = models.CharField("nome da fonte", max_length=120)
+    source_url = models.URLField("endereço do recurso")
+    vestibular_level = models.CharField("nível de vestibular", max_length=120, default="Ensino médio")
+    last_checked_at = models.DateField("última verificação", null=True, blank=True)
+    is_published = models.BooleanField("publicado", default=True)
+    position = models.PositiveSmallIntegerField("ordem", default=0)
+
+    class Meta:
+        ordering = ["position", "title"]
+        constraints = [
+            models.UniqueConstraint(fields=["subject", "source_url"], name="unique_subject_resource_url"),
+        ]
+        verbose_name = "recurso externo de estudo"
+        verbose_name_plural = "recursos externos de estudo"
+
+    def __str__(self):
+        return f"{self.subject}: {self.title}"
+
+    def clean(self):
+        if self.is_published:
+            errors = {}
+            if not self.source_name or not self.source_url:
+                errors["source_url"] = "Informe a fonte do recurso antes de publicar."
+            if not self.last_checked_at:
+                errors["last_checked_at"] = "Registre a data de verificação antes de publicar."
+            if errors:
+                raise ValidationError(errors)
 
 
 class StudyMaterial(models.Model):
@@ -32,7 +73,7 @@ class StudyMaterial(models.Model):
     summary = models.CharField("resumo", max_length=300, blank=True)
     content = models.TextField("conteúdo", blank=True)
     material_type = models.CharField("tipo", max_length=20, choices=MaterialType.choices, default=MaterialType.SUMMARY)
-    attachment = models.FileField("arquivo", upload_to="materiais/", blank=True)
+    attachment = models.FileField("arquivo", upload_to="materiais/", blank=True, validators=[validate_pdf_upload])
     source_url = models.URLField("fonte", blank=True)
     is_official = models.BooleanField("material oficial", default=False)
     is_demo = models.BooleanField("conteúdo demonstrativo", default=False)

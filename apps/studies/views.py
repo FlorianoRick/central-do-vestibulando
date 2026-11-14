@@ -9,30 +9,53 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import MockExamResultForm, StudyPlanForm, StudySessionForm, SyllabusCompareForm
-from .models import MockExamResult, StudyMaterial, StudyPlan, StudySession, StudySubject
+from .models import MockExamResult, StudyMaterial, StudyPlan, StudyResource, StudySession, StudySubject
 
 
 def material_list(request):
-    subjects = StudySubject.objects.all()
+    subjects = StudySubject.objects.filter(is_active=True)
     selected_subject = request.GET.get("materia", "").strip()
-    materials = StudyMaterial.objects.filter(is_published=True).select_related("subject")
+    materials = StudyMaterial.objects.filter(
+        is_published=True,
+        subject__is_active=True,
+    ).select_related("subject")
+    resources = StudyResource.objects.filter(
+        is_published=True,
+        subject__is_active=True,
+        source_name__gt="",
+        source_url__gt="",
+        last_checked_at__isnull=False,
+    ).select_related("subject")
     if selected_subject:
         materials = materials.filter(subject__slug=selected_subject)
+        resources = resources.filter(subject__slug=selected_subject)
     query = request.GET.get("q", "").strip()
     if query:
         materials = materials.filter(Q(title__icontains=query) | Q(summary__icontains=query) | Q(content__icontains=query))
+        resources = resources.filter(
+            Q(title__icontains=query)
+            | Q(description__icontains=query)
+            | Q(source_name__icontains=query)
+        )
     page_obj = Paginator(materials, 10).get_page(request.GET.get("page"))
     return render(request, "studies/material_list.html", {
         "subjects": subjects,
         "selected_subject": selected_subject,
+        "resources": resources,
         "materials": page_obj.object_list,
         "page_obj": page_obj,
         "query": query,
+        "result_count": page_obj.paginator.count + resources.count(),
     })
 
 
 def material_detail(request, slug):
-    material = get_object_or_404(StudyMaterial.objects.select_related("subject"), slug=slug, is_published=True)
+    material = get_object_or_404(
+        StudyMaterial.objects.select_related("subject"),
+        slug=slug,
+        is_published=True,
+        subject__is_active=True,
+    )
     is_saved = request.user.is_authenticated and material.saved_by.filter(user=request.user).exists()
     return render(request, "studies/material_detail.html", {"material": material, "is_saved": is_saved})
 

@@ -7,10 +7,10 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from apps.admissions.models import CalendarEvent, EntranceExam
+from apps.admissions.models import EntranceExam
 from apps.studies.models import StudyPlan, StudySession
 from .forms import EmailForm, EmailLoginForm, PreferencesForm, ProfileForm, RegistrationForm
-from .models import FavoriteCalendarEvent, FavoriteExam, Notification, SavedMaterial
+from .models import FavoriteExam, Notification, SavedMaterial
 
 User = get_user_model()
 
@@ -88,17 +88,6 @@ def toggle_exam_favorite(request, exam_id):
     else:
         messages.success(request, "Vestibular salvo na sua conta.")
     return redirect("admissions:detail", slug=exam.slug)
-
-
-@login_required
-@require_POST
-def toggle_event_favorite(request, event_id):
-    event = get_object_or_404(CalendarEvent, pk=event_id)
-    favorite, created = FavoriteCalendarEvent.objects.get_or_create(user=request.user, event=event)
-    if not created:
-        favorite.delete()
-    messages.success(request, "Evento atualizado na sua lista de favoritos.")
-    return redirect("admissions:calendar")
 
 
 @login_required
